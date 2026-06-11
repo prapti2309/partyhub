@@ -1,0 +1,222 @@
+
+> client@0.1.0 lint
+> eslint
+
+
+/Users/jayeshyadav/Projects/partyhub-main/client/eslint.config.mjs
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): eslint.config.mjs
+
+/Users/jayeshyadav/Projects/partyhub-main/client/lint-staged.config.js
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): lint-staged.config.js
+
+/Users/jayeshyadav/Projects/partyhub-main/client/postcss.config.mjs
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): postcss.config.mjs
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/about/page.tsx
+  4:26  warning  'Sparkles' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/admin/dashboard/page.tsx
+   4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  11:3   warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  12:3   warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  13:3   warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  14:3   warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  17:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/admin/rooms/page.tsx
+  33:5  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/admin/rooms/page.tsx:33:5
+  31 |       return;
+  32 |     }
+> 33 |     setActiveRooms(roomsList);
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |   }, [user, isAuthenticated, router, roomsList]);
+  35 |
+  36 |   if (!isAuthenticated || user?.role !== "ADMIN") return null;  react-hooks/set-state-in-effect
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/admin/users/page.tsx
+    6:17  warning  'ShieldAlert' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   30:75  warning  Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+  144:83  warning  Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/contact/page.tsx
+   7:16  warning  'MessageSquare' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  75:88  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                  react/no-unescaped-entities
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/dashboard/page.tsx
+  13:3   warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  14:3   warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  15:3   warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:3   warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  39:57  warning  'url' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/forgot-password/page.tsx
+  42:27  warning  'data' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  72:17  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`         react/no-unescaped-entities
+  84:21  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`         react/no-unescaped-entities
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/friends/page.tsx
+   29:5   warning  'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                @typescript-eslint/no-unused-vars
+   41:5   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  143:68  warning  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  208:68  warning  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/login/page.tsx
+  183:18  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/notifications/page.tsx
+   11:3   warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u                                                                                        @typescript-eslint/no-unused-vars
+   12:3   warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                                                                                         @typescript-eslint/no-unused-vars
+   13:3   warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u                                                                                   @typescript-eslint/no-unused-vars
+   27:5   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   30:9   warning  'handleMarkRead' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                           @typescript-eslint/no-unused-vars
+   45:28  warning  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  135:69  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                     react/no-unescaped-entities
+  135:87  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                     react/no-unescaped-entities
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/page.tsx
+   9:3  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  14:3  warning  'Lock' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  19:3  warning  'ChevronDown' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/profile/page.tsx
+   8:28  warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  15:3   warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  16:3   warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  17:3   warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  18:3   warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  66:7   warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/profile/page.tsx:66:7
+  64 |       setValue("bio", user.profile?.bio || "");
+  65 |       setValue("status", user.profile?.status || "");
+> 66 |       setSeed(user.username);
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  67 |     }
+  68 |   }, [user, isAuthenticated, router, setValue]);
+  69 |  react-hooks/set-state-in-effect
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/reset-password/page.tsx
+   4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  52:27  warning  'data' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/room/[code]/page.tsx
+   32:3   warning  'UserPlus' is defined but never used. Allowed unused vars must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
+   33:3   warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u                                                                                            @typescript-eslint/no-unused-vars
+   35:3   warning  'Lock' is defined but never used. Allowed unused vars must match /^_/u                                                                                              @typescript-eslint/no-unused-vars
+   58:43  warning  'addReaction' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                              @typescript-eslint/no-unused-vars
+   67:10  warning  'showInviteModal' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                          @typescript-eslint/no-unused-vars
+   67:27  warning  'setShowInviteModal' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                       @typescript-eslint/no-unused-vars
+  182:5   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  440:42  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                     react/no-unescaped-entities
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/room/create/page.tsx
+   8:16  warning  'HelpCircle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   8:28  warning  'Lock' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   8:34  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  53:48  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  63:20  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/room/create/page.tsx:63:20
+  61 |   });
+  62 |
+> 63 |   const isPublic = watch("isPublic");
+     |                    ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  64 |
+  65 |   if (!isAuthenticated || !user) return null;
+  66 |  react-hooks/incompatible-library
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/room/join/page.tsx
+   8:19  warning  'Film' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  61:16  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/app/room/join/page.tsx:61:16
+  59 |   });
+  60 |
+> 61 |   const code = watch("code");
+     |                ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  62 |   const [passwordRequired, setPasswordRequired] = useState(false);
+  63 |
+  64 |   // Check if room code requires password in real-time  react-hooks/incompatible-library
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/components/Navigation.tsx
+  29:7  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  30:7  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/components/Sidebar.tsx
+  111:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/components/ui/Spinner.tsx
+  4:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/contexts/SocketContext.tsx
+   7:10  warning  'useVoiceStore' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+  11:11  warning  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  13:36  warning  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  39:35  error    The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+  43:35  error    The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+  47:37  error    The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+  57:46  warning  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  73:17  warning  'mockMsg' is assigned a value but never used. Allowed unused vars must match /^_/u                                       @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/contexts/WebRTCContext.tsx
+   28:9   warning  'roomStore' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   31:9   warning  'isCameraOn' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   32:9   warning  'isScreenSharing' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   49:7   warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/contexts/WebRTCContext.tsx:49:7
+  47 |   useEffect(() => {
+  48 |     if (!isInVoiceChannel) {
+> 49 |       cleanupStreams();
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  50 |     }
+  51 |   }, [isInVoiceChannel]);
+  52 |  react-hooks/set-state-in-effect
+   51:6   warning  React Hook useEffect has a missing dependency: 'cleanupStreams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+   95:37  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+   95:69  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  168:6   warning  React Hook useEffect has a missing dependency: 'voiceStore'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/stores/chat.store.ts
+  2:23  warning  'MessageReaction' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/stores/friends.store.ts
+  31:29  warning  'username' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/jayeshyadav/Projects/partyhub-main/client/src/stores/room.store.ts
+   2:42  warning  'RoomMemberRole' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  96:11  warning  'updatedMembers' is never reassigned. Use 'const' instead                         prefer-const
+
+✖ 87 problems (19 errors, 68 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
