@@ -35,6 +35,8 @@ model User {
   friendOf           Friend[]            @relation("FriendOf")
   reports            Report[]
   moderationActions  ModerationAction[]
+  tokenVersion       Int                @default(0)
+  auditLogs          AuthAuditLog[]
 
   @@index([email])
   @@map("users")
@@ -374,4 +376,18 @@ model ModerationAction {
   @@index([adminId])
   @@index([targetId])
   @@map("moderation_actions")
+}
+
+model AuthAuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // "LOGIN_SUCCESS" | "LOGIN_FAILURE" | "TOKEN_REPLAY" | "PASSWORD_RESET" | "LOGOUT_ALL"
+  ip        String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("auth_audit_logs")
 }

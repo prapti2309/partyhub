@@ -13,7 +13,9 @@ async function connectRedis() {
     exports.redisClient.on("error", (err) => logger_1.logger.error("❌ Redis client connection failure", { err }));
     exports.redisClient.on("connect", () => logger_1.logger.info("🔌 Redis client connecting..."));
     exports.redisClient.on("ready", () => logger_1.logger.info("✅ Redis client connection successful"));
-    await exports.redisClient.connect();
+    exports.redisClient.connect().catch((err) => {
+        logger_1.logger.error("❌ Initial Redis connection failure", { err });
+    });
 }
 async function disconnectRedis() {
     if (exports.redisClient) {

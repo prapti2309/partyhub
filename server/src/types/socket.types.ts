@@ -33,3 +33,12 @@ export interface ServerToClientEvents {
   "chat:receive": (payload: ChatMessagePayload & { id: string; createdAt: Date }) => void;
   "voice:signal": (payload: VoiceSignalingPayload & { senderUserId: string }) => void;
 }
+
+export interface SocketData {
+  user: {
+    id: string;
+    email: string;
+    role: string;
+  };
+  sessionId: string;
+}

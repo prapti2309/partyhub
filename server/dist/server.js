@@ -17,8 +17,13 @@ async function bootstrap() {
     logger_1.logger.info(`WatchParty backend initialization. Environment: ${env_1.env.NODE_ENV}`);
     // 1. Connect storage infrastructures
     await (0, redis_1.connectRedis)();
-    await prisma_1.prisma.$connect();
-    logger_1.logger.info("Database connection mappings loaded successfully");
+    try {
+        await prisma_1.prisma.$connect();
+        logger_1.logger.info("Database connection mappings loaded successfully");
+    }
+    catch (err) {
+        logger_1.logger.warn("⚠️ Database connection failed on boot. Prisma will retry on query execution.", { err });
+    }
     // 2. Build Express API Routing
     const app = (0, app_1.createApp)();
     const httpServer = http_1.default.createServer(app);
