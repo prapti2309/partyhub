@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/error.middleware";
 import { prisma } from "./config/prisma";
 import { redisClient } from "./config/redis";
 import authRouter from "./routes/auth.routes";
+import roomRouter from "./routes/room.routes";
 
 export function createApp() {
   const app = express();
@@ -30,6 +31,7 @@ export function createApp() {
 
   // Mount Auth Router
   app.use("/api/v1/auth", authRouter);
+  app.use("/api/v1/rooms", roomRouter);
 
   // Health Route Version 1
   app.get("/api/v1/health", async (_req, res) => {

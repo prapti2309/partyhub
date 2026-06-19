@@ -8,6 +8,7 @@ import { logger } from "./utils/logger";
 import { startEmailWorker } from "./jobs/email.worker";
 import { startCleanupWorker, scheduleCleanupJobs } from "./jobs/cleanup.worker";
 import { startNotificationWorker } from "./jobs/notification.worker";
+import { startHeartbeatWorker } from "./jobs/heartbeat.worker";
 
 async function bootstrap() {
   logger.info(`WatchParty backend initialization. Environment: ${env.NODE_ENV}`);
@@ -32,6 +33,7 @@ async function bootstrap() {
   startEmailWorker();
   startCleanupWorker();
   startNotificationWorker();
+  startHeartbeatWorker();
   await scheduleCleanupJobs();
 
   // 5. Port Listening
