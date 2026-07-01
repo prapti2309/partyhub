@@ -35,11 +35,14 @@ export const SOCKET_EVENTS = {
   CHAT_SEND: "chat:send",
   CHAT_EDIT: "chat:edit",
   CHAT_DELETE: "chat:delete",
-  CHAT_TYPING: "chat:typing",
+  CHAT_TYPING_START: "chat:typing:start",
+  CHAT_TYPING_STOP: "chat:typing:stop",
   CHAT_HISTORY: "chat:history",
-  CHAT_REACTION: "chat:reaction",
+  CHAT_REACTION_ADD: "chat:reaction:add",
+  CHAT_REACTION_REMOVE: "chat:reaction:remove",
   CHAT_PIN: "chat:pin",
   CHAT_MESSAGE: "chat:message", // Broadcasted message
+  CHAT_READ_RECEIPT: "chat:read:receipt",
 };
 
 export const ERROR_CODES = {

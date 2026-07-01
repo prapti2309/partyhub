@@ -1,22 +1,52 @@
-import { useEffect } from "react";
-import { useSocket } from "@/contexts/SocketContext";
-import { useRoomStore } from "@/stores/room.store";
+// src/hooks/usePresence.ts
+import { useEffect } from 'react';
+import { socketManager } from '@/lib/socket/SocketManager';
+import { SOCKET_EVENTS } from '@/sockets/events';
+import { usePresenceStore, PresenceStatus } from '@/stores/presence.store';
+import { ParticipantInfo } from '@/stores/presence.store';
 
 export const usePresence = (roomId: string) => {
-  const { socket } = useSocket();
-  const updateParticipantStatus = useRoomStore((state) => state.updateParticipantStatus);
+  const updateParticipant = usePresenceStore((s) => s.updateParticipant);
+  const removeParticipant = usePresenceStore((s) => s.removeParticipant);
+  const setTyping = usePresenceStore((s) => s.setTyping);
 
   useEffect(() => {
-    if (!socket || !roomId) return;
+    const socket = socketManager.getSocket();
+    if (!socket) return;
 
-    const handleOffline = (data: { userId: string }) => {
-      updateParticipantStatus(data.userId, false);
+    const onJoin = (payload: ParticipantInfo) => {
+      if (payload.userId) updateParticipant({ ...payload, status: 'online' });
+    };
+    const onLeave = (payload: { userId: string }) => {
+      removeParticipant(payload.userId);
+    };
+    const onStatus = (payload: { userId: string; status: PresenceStatus }) => {
+      updateParticipant({ userId: payload.userId, status: payload.status, lastSeen: Date.now() } as any);
+    };
+    const onTypingStart = (payload: { userId: string }) => {
+      setTyping(payload.userId, true);
+    };
+    const onTypingStop = (payload: { userId: string }) => {
+      setTyping(payload.userId, false);
     };
 
-    socket.on("room:participant_offline", handleOffline);
+    socket.on(SOCKET_EVENTS.PRESENCE_JOIN, onJoin);
+    socket.on(SOCKET_EVENTS.PRESENCE_LEAVE, onLeave);
+    socket.on(SOCKET_EVENTS.PRESENCE_STATUS_UPDATE, onStatus);
+    socket.on(SOCKET_EVENTS.PRESENCE_TYPING_START, onTypingStart);
+    socket.on(SOCKET_EVENTS.PRESENCE_TYPING_STOP, onTypingStop);
+
+    // Request initial presence snapshot (optional server implementation)
+    socket.emit(SOCKET_EVENTS.PRESENCE_SNAPSHOT_REQUEST, { roomId });
 
     return () => {
-      socket.off("room:participant_offline", handleOffline);
+      socket.off(SOCKET_EVENTS.PRESENCE_JOIN, onJoin);
+      socket.off(SOCKET_EVENTS.PRESENCE_LEAVE, onLeave);
+      socket.off(SOCKET_EVENTS.PRESENCE_STATUS_UPDATE, onStatus);
+      socket.off(SOCKET_EVENTS.PRESENCE_TYPING_START, onTypingStart);
+      socket.off(SOCKET_EVENTS.PRESENCE_TYPING_STOP, onTypingStop);
     };
-  }, [socket, roomId, updateParticipantStatus]);
+  }, [roomId, updateParticipant, removeParticipant, setTyping]);
+
+  // No outbound actions are needed here; UI components call socket.emit directly via useChat when typing.
 };

@@ -541,120 +541,12 @@ export default function RoomPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN PANEL: Chat and members listing lists */}
+        {/* RIGHT COLUMN PANEL: Chat and presence */}
         <aside className="hidden lg:flex w-80 bg-surface border-l border-border flex-col justify-between">
-          {/* Members overlay list */}
-          <div className="p-4 border-b border-border/50 bg-panel/10">
-            <h4 className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-3">
-              Room Members ({activeRoom.members.length})
-            </h4>
-            <div className="flex flex-col gap-2 max-h-36 overflow-y-auto no-scrollbar">
-              {activeRoom.members.map((member: RoomMember) => (
-                <div key={member.userId} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Avatar
-                      fallback={member.username}
-                      src={member.avatarUrl}
-                      status={member.speaking ? "online" : "offline"}
-                      size="xs"
-                      className={cn(member.speaking && "ring-2 ring-success")}
-                    />
-                    <span className="text-xs font-semibold truncate max-w-[130px]">
-                      {member.username}
-                    </span>
-                    {member.role === "OWNER" && (
-                      <Crown className="h-3 w-3 text-warning fill-warning" />
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1 text-[10px] text-text-secondary">
-                    {member.role !== "OWNER" && isOwner && (
-                      <button
-                        onClick={() => {
-                          kickMember(member.userId);
-                          success(`Kicked user ${member.username} from room.`, "User Removed");
-                        }}
-                        className="text-error hover:underline px-1.5 py-0.5 rounded cursor-pointer"
-                      >
-                        Kick
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Chat feed messaging pane */}
-          <div className="flex-1 flex flex-col min-h-0">
-            <div className="p-4 border-b border-border/40">
-              <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">
-                Live Chat Stream
-              </span>
-            </div>
-
-            <div className="flex-grow p-4 overflow-y-auto no-scrollbar flex flex-col gap-4">
-              {messages.map((msg) => (
-                <div key={msg.id} className="flex items-start gap-2.5">
-                  <Avatar src={msg.avatarUrl} fallback={msg.username} size="xs" />
-                  <div className="flex flex-col min-w-0 flex-1 bg-panel/30 border border-border/40 p-2 rounded-lg">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xs font-semibold text-text-primary truncate">
-                        {msg.username}
-                      </span>
-                      <span className="text-[9px] text-text-secondary">
-                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                    <p className="text-xs text-text-secondary leading-normal break-words">
-                      {msg.content}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div ref={chatBottomRef} />
-            </div>
-          </div>
-
-          {/* Chat Input panel */}
-          <div className="p-4 border-t border-border bg-panel/20">
-            {/* Typists indicators loops */}
-            {typists.length > 0 && (
-              <div className="text-[10px] text-text-secondary italic mb-1.5 animate-pulse">
-                {typists.join(", ")} {typists.length === 1 ? "is" : "are"} typing...
-              </div>
-            )}
-
-            <form
-              onSubmit={handleSendChat}
-              className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary"
-            >
-              <input
-                type="text"
-                placeholder="Message in room..."
-                value={chatInput}
-                onChange={handleChatInputChange}
-                className="bg-transparent text-xs text-text-primary placeholder:text-text-secondary focus:outline-none flex-1"
-              />
-              <button
-                type="button"
-                className="text-text-secondary hover:text-text-primary p-1 cursor-pointer focus:outline-none"
-              >
-                <Smile className="h-4.5 w-4.5" />
-              </button>
-              <button
-                type="submit"
-                className="text-primary hover:text-primary-hover p-1 cursor-pointer focus:outline-none"
-              >
-                <Send className="h-4.5 w-4.5" />
-              </button>
-            </form>
-          </div>
+          <PresenceSidebar roomId={code} />
+          <ChatPanel roomId={code} />
         </aside>
-      </div>
+        </div></div>
 
       {/* 3. MOBILE OVERLAYS: Drawer panels */}
       <Drawer
