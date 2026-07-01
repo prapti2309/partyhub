@@ -1,112 +1,133 @@
+// src/stores/voice.store.ts
 import { create } from "zustand";
 
-interface VoicePeer {
+export interface VoiceParticipant {
+  socketId: string;
+  stream: MediaStream;
   userId: string;
   username: string;
   avatarUrl?: string;
-  isMuted: boolean;
   isCameraOn: boolean;
-  isScreenSharing: boolean;
+  isMuted: boolean;
   speaking: boolean;
 }
 
 interface VoiceStoreState {
+  // Core flags
   isInVoiceChannel: boolean;
   isMuted: boolean;
   isDeafened: boolean;
   isCameraOn: boolean;
   isScreenSharing: boolean;
-  voicePeers: VoicePeer[];
 
-  joinVoice: () => void;
-  leaveVoice: () => void;
+  // Participants (including self)
+  participants: VoiceParticipant[];
+  voicePeers: VoiceParticipant[]; // duplicate for UI convenience
+
+  // Actions
+  joinVoice: (roomId: string) => Promise<void>;
+  leaveVoice: (roomId: string) => Promise<void>;
+  setMuted: (muted: boolean) => void;
   toggleMute: () => void;
   toggleDeafen: () => void;
   toggleCamera: () => void;
   toggleScreenShare: () => void;
+  addParticipant: (p: VoiceParticipant) => void;
+  removeParticipant: (socketId: string) => void;
+  clear: () => void;
+
+  // Peer management helpers
+  updatePeerVoiceState: (userId: string, updates: Partial<VoiceParticipant>) => void;
   setSpeaking: (userId: string, speaking: boolean) => void;
-  updatePeerVoiceState: (userId: string, updates: Partial<VoicePeer>) => void;
 }
 
-export const useVoiceStore = create<VoiceStoreState>((set) => ({
+export const useVoiceStore = create<VoiceStoreState>((set, get) => ({
+  // Core flags
   isInVoiceChannel: false,
   isMuted: false,
   isDeafened: false,
   isCameraOn: false,
   isScreenSharing: false,
+
+  // Participants
+  participants: [],
   voicePeers: [],
 
-  joinVoice: () => {
-    // Generate some mock voice peers when we join for demonstration
-    const mockPeers: VoicePeer[] = [
-      {
-        userId: "user-2",
-        username: "retro_coder",
-        avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=retro",
-        isMuted: false,
-        isCameraOn: false,
-        isScreenSharing: false,
-        speaking: false,
-      },
-      {
-        userId: "friend-3",
-        username: "pixel_princess",
-        avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=pixel",
-        isMuted: true,
-        isCameraOn: false,
-        isScreenSharing: false,
-        speaking: false,
-      },
-    ];
-    set({ isInVoiceChannel: true, voicePeers: mockPeers });
+  // Join a voice channel – delegates to WebRTCManager
+  joinVoice: async (roomId: string) => {
+    const { WebRTCManager } = await import("../voice/WebRTCManager");
+    const manager = new WebRTCManager();
+    await manager.join(roomId);
+    set({ isInVoiceChannel: true });
   },
 
-  leaveVoice: () => {
-    set({ isInVoiceChannel: false, voicePeers: [], isCameraOn: false, isScreenSharing: false });
+  // Leave a voice channel
+  leaveVoice: async (roomId: string) => {
+    const { WebRTCManager } = await import("../voice/WebRTCManager");
+    const manager = new WebRTCManager();
+    await manager.leave(roomId);
+    set({ isInVoiceChannel: false, participants: [], voicePeers: [] });
   },
 
+  setMuted: (muted: boolean) => {
+    set({ isMuted: muted });
+    // TODO: propagate mute state to server via signaling
+  },
   toggleMute: () => {
-    set((state) => {
-      const nextMuted = !state.isMuted;
-      // If muting, we don't necessarily deafen, but if we unmute we might want to check
-      return { isMuted: nextMuted };
-    });
+    const current = get().isMuted;
+    set({ isMuted: !current });
+    // TODO: send mute change to server
   },
-
   toggleDeafen: () => {
-    set((state) => {
-      const nextDeafened = !state.isDeafened;
-      // Standard Discord rule: Deafen implies Muted
-      return {
-        isDeafened: nextDeafened,
-        isMuted: nextDeafened ? true : state.isMuted,
-      };
-    });
+    const { isDeafened, isMuted } = get();
+    set({ isDeafened: !isDeafened, isMuted: !isDeafened ? true : isMuted });
   },
-
   toggleCamera: () => {
-    set((state) => {
-      if (!state.isInVoiceChannel) return state;
-      return { isCameraOn: !state.isCameraOn };
-    });
+    const { isCameraOn } = get();
+    set({ isCameraOn: !isCameraOn });
+    // TODO: start/stop local video via WebRTCManager
   },
-
   toggleScreenShare: () => {
-    set((state) => {
-      if (!state.isInVoiceChannel) return state;
-      return { isScreenSharing: !state.isScreenSharing };
-    });
+    const { isScreenSharing } = get();
+    set({ isScreenSharing: !isScreenSharing });
+    // TODO: start/stop screen share via WebRTCManager
   },
 
-  setSpeaking: (userId: string, speaking: boolean) => {
-    set((state) => ({
-      voicePeers: state.voicePeers.map((p) => (p.userId === userId ? { ...p, speaking } : p)),
-    }));
-  },
+  addParticipant: (p: VoiceParticipant) =>
+    set((s) => {
+      const newList = [...s.participants, p];
+      return { participants: newList, voicePeers: newList };
+    }),
+  removeParticipant: (socketId: string) =>
+    set((s) => {
+      const newList = s.participants.filter((p) => p.socketId !== socketId);
+      return { participants: newList, voicePeers: newList };
+    }),
 
-  updatePeerVoiceState: (userId: string, updates: Partial<VoicePeer>) => {
-    set((state) => ({
-      voicePeers: state.voicePeers.map((p) => (p.userId === userId ? { ...p, ...updates } : p)),
-    }));
-  },
+  // Peer management helpers
+  updatePeerVoiceState: (userId: string, updates: Partial<VoiceParticipant>) =>
+    set((s) => {
+      const newList = s.participants.map((p) =>
+        p.userId === userId ? { ...p, ...updates } : p
+      );
+      return { participants: newList, voicePeers: newList };
+    }),
+  setSpeaking: (userId: string, speaking: boolean) =>
+    set((s) => {
+      const newList = s.participants.map((p) =>
+        p.userId === userId ? { ...p, speaking } : p
+      );
+      return { participants: newList, voicePeers: newList };
+    }),
+
+  clear: () =>
+    set({
+      isInVoiceChannel: false,
+      isMuted: false,
+      isDeafened: false,
+      isCameraOn: false,
+      isScreenSharing: false,
+      participants: [],
+      voicePeers: [],
+    }),
 }));

@@ -43,6 +43,18 @@ export const SOCKET_EVENTS = {
   CHAT_PIN: "chat:pin",
   CHAT_MESSAGE: "chat:message", // Broadcasted message
   CHAT_READ_RECEIPT: "chat:read:receipt",
+  // Voice Events
+  VOICE_JOIN: "voice:join",
+  VOICE_LEAVE: "voice:leave",
+  VOICE_OFFER: "voice:offer",
+  VOICE_ANSWER: "voice:answer",
+  VOICE_ICE_CANDIDATE: "voice:ice-candidate",
+  VOICE_MUTE: "voice:mute",
+  VOICE_UNMUTE: "voice:unmute",
+  VOICE_PEER_CONNECTED: "voice:peer-connected",
+  VOICE_PEER_DISCONNECTED: "voice:peer-disconnected",
+  VOICE_ERROR: "voice:error",
+  VOICE_STATE: "voice:state",
 };
 
 export const ERROR_CODES = {

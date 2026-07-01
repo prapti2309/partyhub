@@ -1,0 +1,119 @@
+// src/voice/WebRTCManager.ts
+import { MediaManager } from "./MediaManager";
+import { PeerManager } from "./PeerManager";
+import { SignalingClient } from "./SignalingClient";
+import { logger } from "@/utils/logger";
+
+/**
+ * Orchestrates the full WebRTC voice flow.
+ * - Acquires microphone stream via MediaManager.
+ * - Creates peer connections via PeerManager.
+ * - Exchanges SDP/ICE through SignalingClient.
+ */
+export class WebRTCManager {
+  private mediaManager = MediaManager.getInstance();
+  private peerManager = new PeerManager();
+  private signaling = new SignalingClient();
+  private localStream: MediaStream | null = null;
+
+  /** Join a voice room */
+  async join(roomId: string) {
+    // 1️⃣ Acquire local audio stream
+    this.localStream = await this.mediaManager.acquire();
+    // 2️⃣ Notify server we are joining
+    await this.signaling.join({ roomId });
+    // 3️⃣ Listen for remote peers
+    this.setupRemoteListeners(roomId);
+  }
+
+  /** Leave the voice room */
+  async leave(roomId: string) {
+    // Notify server
+    await this.signaling.leave({ roomId });
+    // Cleanup peers and media
+    this.peerManager.closeAll();
+    this.mediaManager.release();
+    this.localStream = null;
+  }
+
+  /** Set mute state */
+  async setMute(roomId: string, muted: boolean) {
+    if (!this.localStream) return;
+    this.localStream.getAudioTracks().forEach((t) => (t.enabled = !muted));
+    await this.signaling.mute({ roomId, muted });
+  }
+
+  /** Attach local stream to a given HTMLAudioElement (used by UI) */
+  attachLocalAudio(element: HTMLAudioElement) {
+    if (this.localStream) {
+      element.srcObject = this.localStream;
+      element.autoplay = true;
+    }
+  }
+
+  /** Internal: handle incoming remote peer events */
+  private setupRemoteListeners(roomId: string) {
+    // When a new peer connects, create a PeerConnection and add local tracks
+    this.signaling.onPeerConnected(async ({ socketId }) => {
+      const pc = this.peerManager.createPeer(socketId);
+      // Add local tracks to the connection
+      if (this.localStream) {
+        this.localStream.getTracks().forEach((track) => pc.addTrack(track, this.localStream!));
+      }
+      // Listen for remote tracks and forward to UI via custom events
+      pc.ontrack = (event) => {
+        const remoteStream = event.streams[0];
+        const audioEvent = new CustomEvent('voice-remote-stream', {
+          detail: { socketId, stream: remoteStream },
+        });
+        window.dispatchEvent(audioEvent);
+      };
+
+      // ICE candidate handling
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          this.signaling.sendIceCandidate({ roomId, candidate: JSON.stringify(e.candidate) });
+        }
+      };
+
+      // Create and send an offer to the remote peer
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await this.signaling.sendOffer({ roomId, sdp: offer.sdp! });
+    });
+
+    // Handle incoming offer
+    this.signaling.onOffer(async ({ from, sdp }) => {
+      const pc = this.peerManager.createPeer(from);
+      await pc.setRemoteDescription({ type: "offer", sdp });
+      // Add local tracks if not already added
+      if (this.localStream) {
+        this.localStream.getTracks().forEach((track) => pc.addTrack(track, this.localStream!));
+      }
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      await this.signaling.sendAnswer({ roomId, sdp: answer.sdp! });
+    });
+
+    // Handle incoming answer
+    this.signaling.onAnswer(async ({ from, sdp }) => {
+      const pc = this.peerManager.getPeer(from);
+      if (pc) {
+        await pc.setRemoteDescription({ type: "answer", sdp });
+      }
+    });
+
+    // Handle incoming ICE candidate
+    this.signaling.onIceCandidate(async ({ from, candidate }) => {
+      const pc = this.peerManager.getPeer(from);
+      if (pc) {
+        await pc.addIceCandidate(JSON.parse(candidate));
+      }
+    });
+
+    // Remote peer disconnected – clean up
+    this.signaling.onPeerDisconnected(({ socketId }) => {
+      this.peerManager.removePeer(socketId);
+    });
+  }
+}

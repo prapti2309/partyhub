@@ -1,0 +1,21 @@
+- [ ] Add voice DTO types (`src/types/voice.types.ts`) and Zod schemas.
+- [ ] Add voice validators (`src/validators/voice.validator.ts`).
+- [ ] Extend `socket.constants.ts` with voice event constants (already done).
+- [ ] Implement `VoiceRepository` (`src/repositories/voice.repository.ts`) for Redis state.
+- [ ] Implement `VoiceService` (`src/services/voice.service.ts`).
+- [ ] Implement `VoiceHandler` (`src/sockets/handlers/voice.handler.ts`).
+- [ ] Register `voice.handler` in `socket.registry.ts`.
+- [ ] Add client-side Zustand store (`src/stores/voice.store.ts`).
+- [ ] Add client-side hook `useVoice.ts`.
+- [ ] Implement MediaManager (`src/voice/MediaManager.ts`).
+- [ ] Implement PeerManager (`src/voice/PeerManager.ts`).
+- [ ] Implement WebRTCManager (`src/voice/WebRTCManager.ts`).
+- [ ] Implement SignalingClient (`src/voice/SignalingClient.ts`).
+- [ ] Create VoiceProvider (`src/voice/VoiceProvider.tsx`).
+- [ ] Add minimal UI component `VoicePanel.tsx` and integrate into room page.
+- [ ] Write unit tests for server DTOs, service, repository.
+- [ ] Write integration tests for signaling flow.
+- [ ] Write E2E tests for voice join/leave and mute.
+- [ ] Update README and docs.
+- [ ] Verify build passes with `npm run build`.
+- [ ] Perform load testing for 100 concurrent users.

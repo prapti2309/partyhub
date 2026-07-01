@@ -9,6 +9,7 @@ import { useChatStore } from "../../../stores/chat.store";
 import { usePlayerStore } from "../../../stores/player.store";
 import { useVoiceStore } from "../../../stores/voice.store";
 import { useWebRTC } from "../../../hooks/useWebRTC";
+import { VoiceProvider } from "../../../voice/VoiceProvider";
 import { useRoomSocket } from "../../../hooks/useRoomSocket";
 import { useChatSocket } from "../../../hooks/useChatSocket";
 import { usePlayerSocket } from "../../../hooks/usePlayerSocket";
@@ -219,7 +220,8 @@ export default function RoomPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0A0A12] text-text-primary overflow-hidden font-sans">
+    <VoiceProvider>
+      <div className="flex flex-col h-screen bg-[#0A0A12] text-text-primary overflow-hidden font-sans">
       {/* 1. ROOM NAVBAR */}
       <nav className="h-14 border-b border-border bg-surface px-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3.5">
@@ -546,7 +548,7 @@ export default function RoomPage() {
           <PresenceSidebar roomId={code} />
           <ChatPanel roomId={code} />
         </aside>
-        </div></div>
+        </div>
 
       {/* 3. MOBILE OVERLAYS: Drawer panels */}
       <Drawer
@@ -634,6 +636,7 @@ export default function RoomPage() {
           ))}
         </div>
       </Drawer>
-    </div>
+      </div>
+    </VoiceProvider>
   );
 }
