@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSocket } from "@/contexts/SocketContext";
+import { SOCKET_EVENTS } from "@/sockets/events";
 import { usePlayerStore } from "@/stores/player.store";
 import { socketManager } from "@/lib/socket/SocketManager";
 
@@ -18,13 +18,15 @@ export const usePlayerSocket = (roomId: string) => {
       syncState(actualPosition, state.playing, state.playbackRate);
     };
 
-    socket.on("player:play", handleSync);
-    socket.on("player:pause", handleSync);
-    socket.on("player:seek", handleSync);
-    socket.on("player:sync", handleSync);
+    socket.on(SOCKET_EVENTS.PLAYBACK_BROADCAST, handleSync);
+    // No need for individual player events
+    // socket.on("player:play", handleSync);
+    // socket.on("player:pause", handleSync);
+    // socket.on("player:seek", handleSync);
+    // socket.on("player:sync", handleSync);
 
-    // Initial sync
-    socketManager.emitWithAck("player:sync", { roomId }).then((state) => {
+    // Initial sync using the new sync request
+    socketManager.emitWithAck(SOCKET_EVENTS.PLAYBACK_SYNC, { roomId }).then((state) => {
       if (state) handleSync(state);
     }).catch(console.error);
 

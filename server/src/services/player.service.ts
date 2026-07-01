@@ -33,18 +33,17 @@ export const playerService = {
         playbackRate: 1,
         serverTimestamp: Date.now(),
         updatedBy: userId,
-        version: 1,
+        version: 0,
       };
+      await playbackRepository.savePlaybackState(state);
     } else {
+      // Update fields
       state.playing = true;
       state.position = position;
-      state.serverTimestamp = Date.now();
       state.updatedBy = userId;
-      state.version += 1;
-    }
-
-    await playbackRepository.savePlaybackState(state);
-    
+      // Use optimistic concurrency
+      await playbackRepository.updatePlaybackState(state, state.version);
+    }    
     const io = getSocketIO();
     io.to(roomId).emit(SOCKET_EVENTS.PLAYER_PLAY, state);
     
@@ -67,18 +66,15 @@ export const playerService = {
         playbackRate: 1,
         serverTimestamp: Date.now(),
         updatedBy: userId,
-        version: 1,
+        version: 0,
       };
+      await playbackRepository.savePlaybackState(state);
     } else {
       state.playing = false;
       state.position = position;
-      state.serverTimestamp = Date.now();
       state.updatedBy = userId;
-      state.version += 1;
-    }
-
-    await playbackRepository.savePlaybackState(state);
-    
+      await playbackRepository.updatePlaybackState(state, state.version);
+    }    
     const io = getSocketIO();
     io.to(roomId).emit(SOCKET_EVENTS.PLAYER_PAUSE, state);
     
@@ -101,17 +97,14 @@ export const playerService = {
         playbackRate: 1,
         serverTimestamp: Date.now(),
         updatedBy: userId,
-        version: 1,
+        version: 0,
       };
+      await playbackRepository.savePlaybackState(state);
     } else {
       state.position = position;
-      state.serverTimestamp = Date.now();
       state.updatedBy = userId;
-      state.version += 1;
-    }
-
-    await playbackRepository.savePlaybackState(state);
-    
+      await playbackRepository.updatePlaybackState(state, state.version);
+    }    
     const io = getSocketIO();
     io.to(roomId).emit(SOCKET_EVENTS.PLAYER_SEEK, state);
     

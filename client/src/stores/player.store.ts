@@ -30,29 +30,22 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
     set({ videoUrl, videoTitle, position: 0, isPlaying: false });
   },
 
-  syncState: (position: number, isPlaying: boolean, speed: number) => {
-    set((state) => {
-      // Only trigger a state change if there's a significant drift
-      const drift = Math.abs(state.position - position);
+  syncState: (state: any) => {
+    set((s) => {
+      // Compute drift based on server timestamp and playbackRate
+      const now = Date.now();
+      const timeDiff = (now - state.serverTimestamp) / 1000; // seconds
+      const expectedPos = state.playing ? state.position + timeDiff * state.playbackRate : state.position;
+      const drift = Math.abs(s.position - expectedPos);
       const updates: Partial<PlayerStoreState> = {};
 
-      if (drift > state.driftThreshold) {
-        updates.position = position;
+      if (drift > s.driftThreshold) {
+        updates.position = expectedPos;
+        updates.isPlaying = state.playing;
+        updates.speed = state.playbackRate;
       }
 
-      if (state.isPlaying !== isPlaying) {
-        updates.isPlaying = isPlaying;
-      }
-
-      if (state.speed !== speed) {
-        updates.speed = speed;
-      }
-
-      if (Object.keys(updates).length > 0) {
-        return updates;
-      }
-
-      return state;
+      return Object.keys(updates).length ? updates : s;
     });
   },
 }));
