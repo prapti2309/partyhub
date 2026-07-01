@@ -11,11 +11,8 @@ export const usePlayerSocket = (roomId: string) => {
     if (!socket || !roomId) return;
 
     const handleSync = (state: any) => {
-      // Calculate drift: Actual Position = Server Position + (Current Time - Server Timestamp)
-      const timeDiff = (Date.now() - state.serverTimestamp) / 1000;
-      const actualPosition = state.playing ? state.position + timeDiff : state.position;
-      
-      syncState(actualPosition, state.playing, state.playbackRate);
+      // Pass the full server state to the store; drift handling is delegated to the scheduler
+      syncState(state);
     };
 
     socket.on(SOCKET_EVENTS.PLAYBACK_BROADCAST, handleSync);
@@ -31,10 +28,7 @@ export const usePlayerSocket = (roomId: string) => {
     }).catch(console.error);
 
     return () => {
-      socket.off("player:play", handleSync);
-      socket.off("player:pause", handleSync);
-      socket.off("player:seek", handleSync);
-      socket.off("player:sync", handleSync);
+      socket.off(SOCKET_EVENTS.PLAYBACK_BROADCAST, handleSync);
     };
   }, [socket, roomId, syncState]);
 

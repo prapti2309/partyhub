@@ -9,8 +9,13 @@ interface PlayerStoreState {
   isBuffering: boolean;
   driftThreshold: number; // in seconds
   setBuffering: (isBuffering: boolean) => void;
-  changeVideo: (url: string, title: string) => void;
-  syncState: (position: number, isPlaying: boolean, speed: number) => void;
+  changeVideo: (videoUrl: string, videoTitle: string) => void;
+  // Updated helpers for drift correction
+  applySoftRate: (rate: number) => void;
+  seekTo: (position: number) => void;
+  setLocalState: (state: any) => void;
+  // syncState now stores full server snapshot
+  syncState: (state: any) => void;
 }
 
 export const usePlayerStore = create<PlayerStoreState>((set) => ({
@@ -30,22 +35,27 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
     set({ videoUrl, videoTitle, position: 0, isPlaying: false });
   },
 
+  // Store the canonical snapshot; drift handling delegated to sync scheduler
   syncState: (state: any) => {
-    set((s) => {
-      // Compute drift based on server timestamp and playbackRate
-      const now = Date.now();
-      const timeDiff = (now - state.serverTimestamp) / 1000; // seconds
-      const expectedPos = state.playing ? state.position + timeDiff * state.playbackRate : state.position;
-      const drift = Math.abs(s.position - expectedPos);
-      const updates: Partial<PlayerStoreState> = {};
-
-      if (drift > s.driftThreshold) {
-        updates.position = expectedPos;
-        updates.isPlaying = state.playing;
-        updates.speed = state.playbackRate;
-      }
-
-      return Object.keys(updates).length ? updates : s;
+    set({
+      videoUrl: state.videoUrl ?? "",
+      videoTitle: state.videoTitle ?? "",
+      position: state.position,
+      isPlaying: state.playing,
+      speed: state.playbackRate,
+      isBuffering: false,
+    });
+  },
+  // Helper to gently adjust playback rate (soft correction)
+  applySoftRate: (rate) => set({ speed: rate }),
+  // Helper to perform a hard seek (hard correction)
+  seekTo: (pos) => set({ position: pos, isPlaying: true }),
+  // Directly replace local state with server data (used on full sync)
+  setLocalState: (state) => {
+    set({
+      position: state.position,
+      isPlaying: state.playing,
+      speed: state.playbackRate,
     });
   },
 }));
