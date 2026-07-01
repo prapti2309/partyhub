@@ -8,10 +8,14 @@ import { useAuthStore } from "@/stores/auth.store";
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  emitEvent: (event: string, payload: any) => Promise<any>;
 }
 
-const SocketContext = createContext<SocketContextType | undefined>(undefined);
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  isConnected: false,
+});
+
+export const useSocketContext = () => useContext(SocketContext);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -34,25 +38,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     return () => {
-      // Intentionally not disconnecting on unmount to allow persistence across routes
+      // Don't disconnect on unmount, we want the socket to persist across routes
+      // socketManager.disconnect();
     };
   }, [isAuthenticated]);
 
-  const emitEvent = async (event: string, payload: any) => {
-    return socketManager.emitWithAck(event, payload);
-  };
-
   return (
-    <SocketContext.Provider value={{ socket, isConnected, emitEvent }}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
-};
-
-export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (!context) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-  return context;
 };

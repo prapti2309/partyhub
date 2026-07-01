@@ -8,10 +8,6 @@ interface PlayerStoreState {
   speed: number;
   isBuffering: boolean;
   driftThreshold: number; // in seconds
-  play: () => void;
-  pause: () => void;
-  seek: (position: number) => void;
-  setSpeed: (speed: number) => void;
   setBuffering: (isBuffering: boolean) => void;
   changeVideo: (url: string, title: string) => void;
   syncState: (position: number, isPlaying: boolean, speed: number) => void;
@@ -25,22 +21,6 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
   speed: 1.0,
   isBuffering: false,
   driftThreshold: 2.0, // default 2 seconds
-
-  play: () => {
-    set({ isPlaying: true });
-  },
-
-  pause: () => {
-    set({ isPlaying: false });
-  },
-
-  seek: (position: number) => {
-    set({ position });
-  },
-
-  setSpeed: (speed: number) => {
-    set({ speed });
-  },
 
   setBuffering: (isBuffering: boolean) => {
     set({ isBuffering });

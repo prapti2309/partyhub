@@ -9,7 +9,11 @@ import { useChatStore } from "../../../stores/chat.store";
 import { usePlayerStore } from "../../../stores/player.store";
 import { useVoiceStore } from "../../../stores/voice.store";
 import { useWebRTC } from "../../../hooks/useWebRTC";
-import { useSocket } from "../../../hooks/useSocket";
+import { useRoomSocket } from "../../../hooks/useRoomSocket";
+import { useChatSocket } from "../../../hooks/useChatSocket";
+import { usePlayerSocket } from "../../../hooks/usePlayerSocket";
+import { usePresence } from "../../../hooks/usePresence";
+import { useSocket } from "../../../contexts/SocketContext";
 import { RoomMember } from "../../../types";
 import {
   Play,
@@ -60,7 +64,12 @@ export default function RoomPage() {
   const player = usePlayerStore();
   const voice = useVoiceStore();
   const webrtc = useWebRTC();
-  const socket = useSocket();
+  const { joinRoom, leaveRoom } = useRoomSocket(activeRoom?.id || "");
+  const { sendMessage, setTyping } = useChatSocket(activeRoom?.id || "");
+  const { emitPlay, emitPause, emitSeek } = usePlayerSocket(activeRoom?.id || "");
+  usePresence(activeRoom?.id || "");
+  
+  const { emitEvent } = useSocket();
 
   // Component UI States
   const [chatInput, setChatInput] = useState("");
@@ -82,24 +91,19 @@ export default function RoomPage() {
   // Join Room simulation on mount
   useEffect(() => {
     if (isAuthenticated && user && code && (!activeRoom || activeRoom.code !== code)) {
-      joinRoom(code, user.username)
-        .then(() => {
-          socket.joinRoom(code, user.username);
-        })
-        .catch(() => {
-          toastError("Failed to access watch room.", "Connection Error");
-          router.push("/dashboard");
-        });
+      joinRoom(code, user.username).catch(() => {
+        toastError("Failed to access watch room.", "Connection Error");
+        router.push("/dashboard");
+      });
     }
 
     return () => {
       // Clean up room on leave
       if (activeRoom) {
-        socket.leaveRoom(activeRoom.id);
         leaveRoom();
       }
     };
-  }, [code, isAuthenticated, user, joinRoom, leaveRoom, router, activeRoom, socket, toastError]);
+  }, [code, isAuthenticated, user, joinRoom, leaveRoom, router, activeRoom, toastError]);
 
   // Scroll chat to bottom when new messages arrive
   useEffect(() => {
@@ -125,11 +129,9 @@ export default function RoomPage() {
     }
 
     if (player.isPlaying) {
-      player.pause();
-      socket.sendPause(activeRoom.code, player.position);
+      emitPause(player.position);
     } else {
-      player.play();
-      socket.sendPlay(activeRoom.code, player.position);
+      emitPlay(player.position);
     }
   };
 
@@ -139,8 +141,7 @@ export default function RoomPage() {
       return;
     }
     const val = parseFloat(e.target.value);
-    player.seek(val);
-    socket.sendSeek(activeRoom.code, val, player.isPlaying);
+    emitSeek(val);
   };
 
   // Chat message send
@@ -148,15 +149,14 @@ export default function RoomPage() {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    sendMessage(activeRoom.id, chatInput.trim(), user.username, user.id);
-    socket.sendChatMessage(activeRoom.id, chatInput.trim(), user.username, user.id);
+    sendMessage(chatInput.trim());
     setChatInput("");
 
     // Stop typing immediately
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-    socket.sendTypingStop(activeRoom.id, user.username);
+    setTyping(false);
   };
 
   // Chat typing handler
@@ -164,7 +164,7 @@ export default function RoomPage() {
     setChatInput(e.target.value);
 
     // Notify typing started
-    socket.sendTypingStart(activeRoom.id, user.username);
+    setTyping(true);
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -172,7 +172,7 @@ export default function RoomPage() {
 
     // Stop typing timeout
     typingTimeoutRef.current = setTimeout(() => {
-      socket.sendTypingStop(activeRoom.id, user.username);
+      setTyping(false);
     }, 2000);
   };
 
@@ -196,7 +196,7 @@ export default function RoomPage() {
 
   const handleMuteToggle = () => {
     voice.toggleMute();
-    socket.emitEvent("voice-mute", { userId: user.id });
+    emitEvent("voice-mute", { userId: user.id });
   };
 
   const handleCameraToggle = async () => {
@@ -206,7 +206,7 @@ export default function RoomPage() {
       webrtc.stopLocalVideo();
     }
     voice.toggleCamera();
-    socket.emitEvent("voice-camera", { userId: user.id });
+    emitEvent("voice-camera", { userId: user.id });
   };
 
   const handleScreenShareToggle = async () => {
