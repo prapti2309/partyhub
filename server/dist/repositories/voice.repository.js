@@ -12,7 +12,7 @@ const redis_1 = require("@/config/redis");
 exports.voiceRepository = {
     /** Add a participant socket to a voice room */
     async addParticipant(roomId, socketId) {
-        const client = (0, redis_1.getRedisClient)();
+        const client = redis_1.redisClient;
         if (!client)
             return;
         const key = `voice:room:${roomId}:participants`;
@@ -22,7 +22,7 @@ exports.voiceRepository = {
     },
     /** Remove a participant socket from a voice room */
     async removeParticipant(roomId, socketId) {
-        const client = (0, redis_1.getRedisClient)();
+        const client = redis_1.redisClient;
         if (!client)
             return;
         const key = `voice:room:${roomId}:participants`;
@@ -30,7 +30,7 @@ exports.voiceRepository = {
     },
     /** Get all participant socket IDs for a voice room */
     async getParticipants(roomId) {
-        const client = (0, redis_1.getRedisClient)();
+        const client = redis_1.redisClient;
         if (!client)
             return [];
         const key = `voice:room:${roomId}:participants`;
@@ -38,14 +38,14 @@ exports.voiceRepository = {
     },
     /** Store the last SDP offer/answer for a socket – useful for ICE restarts */
     async setLastSdp(roomId, socketId, sdp) {
-        const client = (0, redis_1.getRedisClient)();
+        const client = redis_1.redisClient;
         if (!client)
             return;
         const key = `voice:room:${roomId}:sdp:${socketId}`;
         await client.set(key, sdp, { EX: 60 * 5 }); // 5 min TTL
     },
     async getLastSdp(roomId, socketId) {
-        const client = (0, redis_1.getRedisClient)();
+        const client = redis_1.redisClient;
         if (!client)
             return null;
         const key = `voice:room:${roomId}:sdp:${socketId}`;

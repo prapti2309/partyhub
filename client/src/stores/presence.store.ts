@@ -1,5 +1,5 @@
 // src/stores/presence.store.ts
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 export type PresenceStatus = 'online' | 'offline' | 'away' | 'idle' | 'busy' | 'invisible';

@@ -11,8 +11,8 @@ import { socketRegistry } from "../socket.registry";
 export const registerRoomHandlers = (io: Server, socket: Socket<any, any, any, SocketData>) => {
   const userId = socket.data.user.id;
 
-  socket.on(SOCKET_EVENTS.ROOM_JOIN, async (payload, ack) => {
-    await withErrorHandling(async (socket, data, ackFn) => {
+  socket.on(SOCKET_EVENTS.ROOM_JOIN, async (payload: any, ack: any) => {
+    await withErrorHandling(async (_sock, data, ackFn) => {
       const validated = validatePayload(JoinRoomSchema)(data, ackFn);
       if (!validated.success) return;
       const { roomId, username } = validated.data as JoinRoomDTO;
@@ -40,8 +40,8 @@ export const registerRoomHandlers = (io: Server, socket: Socket<any, any, any, S
     })(socket, payload, ack);
   });
 
-  socket.on(SOCKET_EVENTS.ROOM_LEAVE, async (payload, ack) => {
-    await withErrorHandling(async (socket, data, ackFn) => {
+  socket.on(SOCKET_EVENTS.ROOM_LEAVE, async (payload: any, ack: any) => {
+    await withErrorHandling(async (_sock, data, ackFn) => {
       const validated = validatePayload(LeaveRoomSchema)(data, ackFn);
       if (!validated.success) return;
       const { roomId } = validated.data as LeaveRoomDTO;
@@ -59,8 +59,8 @@ export const registerRoomHandlers = (io: Server, socket: Socket<any, any, any, S
     })(socket, payload, ack);
   });
 
-  socket.on(SOCKET_EVENTS.ROOM_TRANSFER, async (payload, ack) => {
-    await withErrorHandling(async (socket, data, ackFn) => {
+  socket.on(SOCKET_EVENTS.ROOM_TRANSFER, async (payload: any, ack: any) => {
+    await withErrorHandling(async (_sock, data, ackFn) => {
       const validated = validatePayload(TransferOwnerSchema)(data, ackFn);
       if (!validated.success) return;
       const { roomId, newOwnerId } = validated.data as TransferOwnerDTO;

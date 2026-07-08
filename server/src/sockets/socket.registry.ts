@@ -1,5 +1,4 @@
-import { getRedisClient } from "@/config/redis";
-import { logger } from "@/utils/logger";
+import { redisClient } from "@/config/redis";
 
 const SOCKET_PREFIX = "socket:";
 
@@ -12,7 +11,7 @@ export interface SocketRegistryInfo {
 
 export const socketRegistry = {
   async registerSocket(socketId: string, userId: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
 
     const data: SocketRegistryInfo = {
@@ -26,7 +25,7 @@ export const socketRegistry = {
   },
 
   async updateRoom(socketId: string, roomId: string | null): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
 
     if (roomId) {
@@ -37,7 +36,7 @@ export const socketRegistry = {
   },
 
   async getSocket(socketId: string): Promise<SocketRegistryInfo | null> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return null;
 
     const data = await client.hGetAll(`${SOCKET_PREFIX}${socketId}`);
@@ -52,13 +51,13 @@ export const socketRegistry = {
   },
 
   async removeSocket(socketId: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
     await client.del(`${SOCKET_PREFIX}${socketId}`);
   },
 
   async updateHeartbeat(socketId: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
     await client.hSet(`${SOCKET_PREFIX}${socketId}`, "lastHeartbeat", Date.now().toString());
   }

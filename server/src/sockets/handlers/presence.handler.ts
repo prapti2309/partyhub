@@ -5,10 +5,10 @@ import { createSuccessResponse } from "../socket.utils";
 import { socketRegistry } from "../socket.registry";
 import { roomService } from "@/services/room.service";
 
-export const registerPresenceHandlers = (io: Server, socket: Socket<any, any, any, SocketData>) => {
+export const registerPresenceHandlers = (_io: Server, socket: Socket<any, any, any, SocketData>) => {
   const userId = socket.data.user.id;
 
-  socket.on(SOCKET_EVENTS.PING, async (payload, ack) => {
+  socket.on(SOCKET_EVENTS.PING, async (_payload: any, ack: any) => {
     try {
       await socketRegistry.updateHeartbeat(socket.id);
       

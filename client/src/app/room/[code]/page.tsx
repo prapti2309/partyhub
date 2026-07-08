@@ -62,13 +62,13 @@ export default function RoomPage() {
   // Custom stores & contexts
   const { user, isAuthenticated } = useAuthStore();
   const { activeRoom, joinRoom, leaveRoom, updateSettings, kickMember } = useRoomStore();
-  const { messages, typists, sendMessage, addReaction } = useChatStore();
+  const { messages, typingUsers, addReaction } = useChatStore();
 
   const player = usePlayerStore();
   const voice = useVoiceStore();
   const webrtc = useWebRTC();
-  const { joinRoom, leaveRoom } = useRoomSocket(activeRoom?.id || "");
-  const { sendMessage, setTyping } = useChatSocket(activeRoom?.id || "");
+  const { joinRoom: joinRoomSocket, leaveRoom: leaveRoomSocket } = useRoomSocket(activeRoom?.id || "");
+  const { sendMessage: sendChatMessage, setTyping } = useChatSocket(activeRoom?.id || "");
   const { emitPlay, emitPause, emitSeek } = usePlayerSocket(activeRoom?.id || "");
   usePresence(activeRoom?.id || "");
   
@@ -152,7 +152,7 @@ export default function RoomPage() {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    sendMessage(chatInput.trim());
+    sendChatMessage(chatInput.trim());
     setChatInput("");
 
     // Stop typing immediately

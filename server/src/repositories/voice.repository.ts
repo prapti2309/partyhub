@@ -1,6 +1,5 @@
 // src/repositories/voice.repository.ts
-import { getRedisClient } from '@/config/redis';
-import { logger } from '@/utils/logger';
+import { redisClient } from '@/config/redis';
 
 /**
  * Redis‑backed storage for voice session state.
@@ -11,7 +10,7 @@ import { logger } from '@/utils/logger';
 export const voiceRepository = {
   /** Add a participant socket to a voice room */
   async addParticipant(roomId: string, socketId: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
     const key = `voice:room:${roomId}:participants`;
     await client.sAdd(key, socketId);
@@ -21,7 +20,7 @@ export const voiceRepository = {
 
   /** Remove a participant socket from a voice room */
   async removeParticipant(roomId: string, socketId: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
     const key = `voice:room:${roomId}:participants`;
     await client.sRem(key, socketId);
@@ -29,7 +28,7 @@ export const voiceRepository = {
 
   /** Get all participant socket IDs for a voice room */
   async getParticipants(roomId: string): Promise<string[]> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return [];
     const key = `voice:room:${roomId}:participants`;
     return await client.sMembers(key);
@@ -37,14 +36,14 @@ export const voiceRepository = {
 
   /** Store the last SDP offer/answer for a socket – useful for ICE restarts */
   async setLastSdp(roomId: string, socketId: string, sdp: string): Promise<void> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return;
     const key = `voice:room:${roomId}:sdp:${socketId}`;
     await client.set(key, sdp, { EX: 60 * 5 }); // 5 min TTL
   },
 
   async getLastSdp(roomId: string, socketId: string): Promise<string | null> {
-    const client = getRedisClient();
+    const client = redisClient;
     if (!client) return null;
     const key = `voice:room:${roomId}:sdp:${socketId}`;
     return await client.get(key);

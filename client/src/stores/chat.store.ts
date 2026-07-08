@@ -1,5 +1,5 @@
 // src/stores/chat.store.ts
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ChatMessage, MessageReaction } from '@/types/chat.types';
 

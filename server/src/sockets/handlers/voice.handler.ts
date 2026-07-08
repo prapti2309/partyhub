@@ -17,7 +17,7 @@ import { logger } from "@/utils/logger";
  * All events are namespaced under the constants defined in `socket.constants.ts`.
  * Validation is performed using the Zod schemas from `voice.validator.ts`.
  */
-export function registerVoiceHandlers(io: SocketServer, socket: Socket) {
+export function registerVoiceHandlers(_io: SocketServer, socket: Socket) {
   // JOIN ---------------------------------------------------------------
   socket.on(SOCKET_EVENTS.VOICE_JOIN, async (payload: any, ack: any) => {
     try {

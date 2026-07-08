@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.playbackRepository = void 0;
 const redis_repository_1 = require("./redis.repository");
+const socket_constants_1 = require("../sockets/socket.constants");
 const PLAYBACK_PREFIX = "room:playback:";
 exports.playbackRepository = {
     async getPlaybackState(roomId) {
@@ -45,7 +46,7 @@ exports.playbackRepository = {
         const currentVersionStr = await redis_repository_1.redisRepository.hGet(key, "version");
         const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : 0;
         if (currentVersion !== expectedVersion) {
-            throw { code: ERROR_CODES.PLAYBACK_CONFLICT, message: "Playback version conflict" };
+            throw { code: socket_constants_1.ERROR_CODES.PLAYBACK_CONFLICT, message: "Playback version conflict" };
         }
         // Increment version
         state.version = expectedVersion + 1;

@@ -13,7 +13,7 @@ import {
   QualitySchema,
 } from "@/validators/media.validator";
 
-export function registerMediaHandlers(io: SocketServer, socket: Socket<any, any, any, SocketData>) {
+export function registerMediaHandlers(_io: SocketServer, socket: Socket<any, any, any, SocketData>) {
   const userId = socket.data.user?.id;
 
   const handleMediaEvent = (schema: any, eventType: string) => async (payload: any, ack: any) => {

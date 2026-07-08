@@ -1,4 +1,5 @@
 import { redisRepository } from "./redis.repository";
+import { ERROR_CODES } from "../sockets/socket.constants";
 
 const PLAYBACK_PREFIX = "room:playback:";
 

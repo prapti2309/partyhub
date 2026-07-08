@@ -1,27 +1,29 @@
-import { playbackRepository, PlaybackState } from "@/repositories/playback.repository";
-import { roomRepository } from "@/repositories/room.repository";
-import { ERROR_CODES } from "@/sockets/socket.constants";
-import { getSocketIO } from "@/sockets/socket.server";
-import { SOCKET_EVENTS } from "@/sockets/socket.constants";
+import { prisma } from '@/config/prisma';
+import { playbackRepository } from '@/repositories/playback.repository';
+import { ERROR_CODES } from '@/sockets/socket.constants';
+import { getSocketIO } from '@/sockets/socket.server';
+import { SOCKET_EVENTS } from '@/sockets/socket.constants';
+
+/**
+ * Validates that a room exists and returns room + ownership info.
+ */
+async function ensureRoomAccess(roomId: string, userId: string) {
+  const room = await prisma.room.findUnique({ where: { id: roomId } });
+  if (!room) {
+    throw { code: ERROR_CODES.ROOM_NOT_FOUND, message: 'Room not found' };
+  }
+  const isOwner = room.ownerId === userId;
+  return { room, isOwner };
+}
 
 export const playerService = {
-  async ensureRoomAccess(roomId: string, userId: string) {
-    const room = await roomRepository.findById(roomId);
-    if (!room) {
-      throw { code: ERROR_CODES.ROOM_NOT_FOUND, message: "Room not found" };
-    }
-    
-    // Check if user is in room (could also check redis presence)
-    const isOwner = room.ownerId === userId;
-    return { room, isOwner };
-  },
+  ensureRoomAccess,
 
   async handlePlay(roomId: string, userId: string, position: number) {
-    const { isOwner } = await playerService.ensureRoomAccess(roomId, userId);
-    
-    // For now, only owner can control playback, or check room settings
+    const { isOwner } = await ensureRoomAccess(roomId, userId);
+
     if (!isOwner) {
-      throw { code: ERROR_CODES.OWNER_REQUIRED, message: "Only the owner can play the video" };
+      throw { code: ERROR_CODES.OWNER_REQUIRED, message: 'Only the owner can play the video' };
     }
 
     let state = await playbackRepository.getPlaybackState(roomId);
@@ -37,24 +39,23 @@ export const playerService = {
       };
       await playbackRepository.savePlaybackState(state);
     } else {
-      // Update fields
       state.playing = true;
       state.position = position;
       state.updatedBy = userId;
-      // Use optimistic concurrency
       await playbackRepository.updatePlaybackState(state, state.version);
-    }    
+    }
+
     const io = getSocketIO();
-    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_PLAY, state);
-    
+    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_STATE, state);
+
     return state;
   },
 
   async handlePause(roomId: string, userId: string, position: number) {
-    const { isOwner } = await playerService.ensureRoomAccess(roomId, userId);
-    
+    const { isOwner } = await ensureRoomAccess(roomId, userId);
+
     if (!isOwner) {
-      throw { code: ERROR_CODES.OWNER_REQUIRED, message: "Only the owner can pause the video" };
+      throw { code: ERROR_CODES.OWNER_REQUIRED, message: 'Only the owner can pause the video' };
     }
 
     let state = await playbackRepository.getPlaybackState(roomId);
@@ -74,18 +75,19 @@ export const playerService = {
       state.position = position;
       state.updatedBy = userId;
       await playbackRepository.updatePlaybackState(state, state.version);
-    }    
+    }
+
     const io = getSocketIO();
-    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_PAUSE, state);
-    
+    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_STATE, state);
+
     return state;
   },
 
   async handleSeek(roomId: string, userId: string, position: number) {
-    const { isOwner } = await playerService.ensureRoomAccess(roomId, userId);
-    
+    const { isOwner } = await ensureRoomAccess(roomId, userId);
+
     if (!isOwner) {
-      throw { code: ERROR_CODES.OWNER_REQUIRED, message: "Only the owner can seek the video" };
+      throw { code: ERROR_CODES.OWNER_REQUIRED, message: 'Only the owner can seek the video' };
     }
 
     let state = await playbackRepository.getPlaybackState(roomId);
@@ -104,21 +106,17 @@ export const playerService = {
       state.position = position;
       state.updatedBy = userId;
       await playbackRepository.updatePlaybackState(state, state.version);
-    }    
+    }
+
     const io = getSocketIO();
-    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_SEEK, state);
-    
+    io.to(roomId).emit(SOCKET_EVENTS.PLAYER_STATE, state);
+
     return state;
   },
 
   async handleSync(roomId: string, userId: string) {
-    await playerService.ensureRoomAccess(roomId, userId);
-    
+    await ensureRoomAccess(roomId, userId);
     const state = await playbackRepository.getPlaybackState(roomId);
-    if (state) {
-      // Send the current canonical state to the requesting user only, handled in the handler via ack
-      return state;
-    }
-    return null;
-  }
+    return state ?? null;
+  },
 };

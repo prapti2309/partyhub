@@ -1,8 +1,8 @@
 import { createAdapter } from "@socket.io/redis-adapter";
-import { getRedisClient } from "@/config/redis";
+import { redisClient } from "@/config/redis";
 
 export const getRedisAdapter = () => {
-  const pubClient = getRedisClient();
+  const pubClient = redisClient;
   if (!pubClient) {
     throw new Error("Redis client not initialized for socket adapter");
   }
