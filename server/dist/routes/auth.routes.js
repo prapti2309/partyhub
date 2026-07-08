@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const auth_controller_1 = require("../controllers/auth.controller");
-const validate_middleware_1 = require("../middleware/validate.middleware");
-const auth_middleware_1 = require("../middleware/auth.middleware");
-const auth_validators_1 = require("../validators/auth.validators");
+const auth_controller_1 = require("@/controllers/auth.controller");
+const validate_middleware_1 = require("@/middleware/validate.middleware");
+const auth_middleware_1 = require("@/middleware/auth.middleware");
+const auth_validators_1 = require("@/validators/auth.validators");
 const router = (0, express_1.Router)();
 // Route-Specific Rate Limiters
 const loginLimiter = (0, express_rate_limit_1.default)({

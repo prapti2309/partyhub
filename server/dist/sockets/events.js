@@ -12,6 +12,13 @@ exports.SOCKET_EVENTS = {
     // Chat
     CHAT_SEND: "chat:send",
     CHAT_RECEIVE: "chat:receive",
+    CHAT_EDIT: "chat:edit",
+    CHAT_DELETE: "chat:delete",
+    CHAT_REACTION_ADD: "chat:reaction:add",
+    CHAT_REACTION_REMOVE: "chat:reaction:remove",
+    CHAT_TYPING_START: "chat:typing:start",
+    CHAT_TYPING_STOP: "chat:typing:stop",
+    CHAT_READ_RECEIPT: "chat:read:receipt",
     // Voice WebRTC
     VOICE_SIGNAL: "voice:signal",
 };

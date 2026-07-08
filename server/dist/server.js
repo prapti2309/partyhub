@@ -13,6 +13,7 @@ const logger_1 = require("./utils/logger");
 const email_worker_1 = require("./jobs/email.worker");
 const cleanup_worker_1 = require("./jobs/cleanup.worker");
 const notification_worker_1 = require("./jobs/notification.worker");
+const heartbeat_worker_1 = require("./jobs/heartbeat.worker");
 async function bootstrap() {
     logger_1.logger.info(`WatchParty backend initialization. Environment: ${env_1.env.NODE_ENV}`);
     // 1. Connect storage infrastructures
@@ -33,6 +34,7 @@ async function bootstrap() {
     (0, email_worker_1.startEmailWorker)();
     (0, cleanup_worker_1.startCleanupWorker)();
     (0, notification_worker_1.startNotificationWorker)();
+    (0, heartbeat_worker_1.startHeartbeatWorker)();
     await (0, cleanup_worker_1.scheduleCleanupJobs)();
     // 5. Port Listening
     httpServer.listen(env_1.env.PORT, () => {

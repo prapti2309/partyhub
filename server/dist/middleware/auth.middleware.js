@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireEmailVerified = exports.requireAuth = void 0;
-const jwt_1 = require("../utils/jwt");
-const session_repository_1 = require("../repositories/session.repository");
-const user_repository_1 = require("../repositories/user.repository");
+const jwt_1 = require("@/utils/jwt");
+const session_repository_1 = require("@/repositories/session.repository");
+const user_repository_1 = require("@/repositories/user.repository");
 const requireAuth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

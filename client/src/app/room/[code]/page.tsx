@@ -16,6 +16,8 @@ import { usePlayerSocket } from "../../../hooks/usePlayerSocket";
 import { usePresence } from "../../../hooks/usePresence";
 import { useSocket } from "../../../contexts/SocketContext";
 import { RoomMember } from "../../../types";
+import { VideoGrid } from "../../../features/media/components/VideoGrid";
+import { MediaToolbar } from "../../../features/media/components/MediaToolbar";
 import {
   Play,
   Pause,
@@ -400,147 +402,14 @@ export default function RoomPage() {
               </div>
             </div>
 
-            {/* Webcam Video feeds grid (visible when in voice channel and webcams are active) */}
-            {voice.isInVoiceChannel && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
-                {/* Local user stream display */}
-                <Card className="aspect-video bg-surface/50 border-border/80 flex items-center justify-center overflow-hidden relative glass shadow-md">
-                  {voice.isCameraOn ? (
-                    <div className="h-full w-full flex items-center justify-center bg-zinc-950 font-semibold relative">
-                      <span className="text-xs text-text-secondary">Self Camera Active</span>
-                      <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
-                        <span className="text-[10px] font-bold text-text-primary">You</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2">
-                      <Avatar fallback={user.username} src={user.profile?.avatarUrl} size="md" />
-                      <span className="text-xs font-semibold">
-                        {user.profile?.displayName || user.username}
-                      </span>
-                    </div>
-                  )}
-                  {voice.isMuted && (
-                    <span className="absolute top-2 right-2 p-1 bg-error/25 border border-error/40 text-error rounded-full backdrop-blur">
-                      <MicOff className="h-3 w-3" />
-                    </span>
-                  )}
-                </Card>
-
-                {/* Peer streams list */}
-                {voice.voicePeers.map((peer) => (
-                  <Card
-                    key={peer.userId}
-                    className={cn(
-                      "aspect-video bg-surface/50 border-border/85 flex items-center justify-center overflow-hidden relative glass shadow-md",
-                      peer.speaking && "ring-2 ring-success/80"
-                    )}
-                  >
-                    {peer.isCameraOn ? (
-                      <div className="h-full w-full flex items-center justify-center bg-zinc-950 font-semibold relative">
-                        <span className="text-xs text-text-secondary">
-                          {peer.username}&apos;s Camera
-                        </span>
-                        <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
-                          <span className="text-[10px] font-bold text-text-primary">
-                            {peer.username}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <Avatar fallback={peer.username} src={peer.avatarUrl} size="md" />
-                        <span className="text-xs font-semibold">{peer.username}</span>
-                      </div>
-                    )}
-                    {peer.isMuted && (
-                      <span className="absolute top-2 right-2 p-1 bg-zinc-950/60 text-text-secondary rounded-full backdrop-blur">
-                        <MicOff className="h-3 w-3" />
-                      </span>
-                    )}
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 3. VOICE BAR - Mute, deafen, cameras, screen-sharing toggles */}
-          <div className="h-16 border-t border-border bg-surface px-6 flex items-center justify-between z-10 w-full">
-            <div className="flex items-center gap-3">
-              <Button
-                variant={voice.isInVoiceChannel ? "primary" : "secondary"}
-                onClick={handleVoiceToggle}
-                size="sm"
-                className="flex items-center gap-1.5 font-semibold text-xs py-2 px-3.5 cursor-pointer"
-              >
-                <Mic className="h-4 w-4" />
-                <span>{voice.isInVoiceChannel ? "Connected to Voice" : "Join Voice Channel"}</span>
-              </Button>
-
-              {voice.isInVoiceChannel && (
-                <div className="flex items-center gap-1 bg-panel border border-border rounded-lg p-1">
-                  <Tooltip content={voice.isMuted ? "Unmute Mic" : "Mute Mic"}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleMuteToggle}
-                      className={cn(
-                        "p-1.5 rounded cursor-pointer text-text-secondary",
-                        voice.isMuted && "text-error bg-error/10 hover:bg-error/20"
-                      )}
-                    >
-                      {voice.isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content={voice.isDeafened ? "Undeafen Audio" : "Deafen Audio"}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={voice.toggleDeafen}
-                      className={cn(
-                        "p-1.5 rounded cursor-pointer text-text-secondary",
-                        voice.isDeafened && "text-error bg-error/10 hover:bg-error/20"
-                      )}
-                    >
-                      {voice.isDeafened ? (
-                        <VolumeX className="h-4 w-4" />
-                      ) : (
-                        <Volume2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </Tooltip>
-                </div>
-              )}
+            {/* VideoGrid Component handles all webcam grids */}
+            <div className="flex-1 mt-2 border border-border/40 rounded-xl overflow-hidden bg-black/50">
+              <VideoGrid roomId={code} />
             </div>
-
-            {/* Video webcams & screen-share togglers */}
-            {voice.isInVoiceChannel && (
-              <div className="flex items-center gap-1.5">
-                <Tooltip content={voice.isCameraOn ? "Turn Camera Off" : "Turn Camera On"}>
-                  <Button
-                    variant={voice.isCameraOn ? "primary" : "outline"}
-                    onClick={handleCameraToggle}
-                    className="p-2 border-border/80 text-text-secondary hover:text-text-primary cursor-pointer"
-                  >
-                    {voice.isCameraOn ? (
-                      <VideoIcon className="h-4.5 w-4.5" />
-                    ) : (
-                      <VideoOff className="h-4.5 w-4.5" />
-                    )}
-                  </Button>
-                </Tooltip>
-                <Tooltip content={voice.isScreenSharing ? "Stop Screen Share" : "Share Screen"}>
-                  <Button
-                    variant={voice.isScreenSharing ? "primary" : "outline"}
-                    onClick={handleScreenShareToggle}
-                    className="p-2 border-border/80 text-text-secondary hover:text-text-primary cursor-pointer"
-                  >
-                    <Share2 className="h-4.5 w-4.5" />
-                  </Button>
-                </Tooltip>
-              </div>
-            )}
           </div>
+
+          {/* Media Toolbar replaces old Voice Bar */}
+          <MediaToolbar roomId={code} />
         </div>
 
         {/* RIGHT COLUMN PANEL: Chat and presence */}

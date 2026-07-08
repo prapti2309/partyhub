@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logger = void 0;
 const pino_1 = __importDefault(require("pino"));
-const env_1 = require("../config/env");
+const env_1 = require("@/config/env");
 const pinoLogger = (0, pino_1.default)({
     level: env_1.env.NODE_ENV === "development" ? "debug" : "info",
     transport: env_1.env.NODE_ENV === "development" ? {

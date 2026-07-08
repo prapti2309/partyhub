@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authService = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const uuid_1 = require("uuid");
-const prisma_1 = require("../config/prisma");
-const user_repository_1 = require("../repositories/user.repository");
-const session_repository_1 = require("../repositories/session.repository");
-const jwt_1 = require("../utils/jwt");
-const errors_1 = require("../utils/errors");
-const logger_1 = require("../utils/logger");
+const prisma_1 = require("@/config/prisma");
+const user_repository_1 = require("@/repositories/user.repository");
+const session_repository_1 = require("@/repositories/session.repository");
+const jwt_1 = require("@/utils/jwt");
+const errors_1 = require("@/utils/errors");
+const logger_1 = require("@/utils/logger");
 exports.authService = {
     async register(data) {
         const existing = await user_repository_1.userRepository.findByEmail(data.email);

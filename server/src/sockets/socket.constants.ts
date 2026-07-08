@@ -55,6 +55,17 @@ export const SOCKET_EVENTS = {
   VOICE_PEER_DISCONNECTED: "voice:peer-disconnected",
   VOICE_ERROR: "voice:error",
   VOICE_STATE: "voice:state",
+
+  // Media (Video/Screen) Events
+  MEDIA_CAMERA_ON: "media:camera:on",
+  MEDIA_CAMERA_OFF: "media:camera:off",
+  MEDIA_SCREEN_START: "media:screen:start",
+  MEDIA_SCREEN_STOP: "media:screen:stop",
+  MEDIA_DEVICE_UPDATE: "media:device:update",
+  MEDIA_PERMISSIONS: "media:permissions",
+  MEDIA_SPEAKING: "media:speaking",
+  MEDIA_QUALITY: "media:quality",
+  MEDIA_STATE_UPDATE: "media:state:update",
 };
 
 export const ERROR_CODES = {

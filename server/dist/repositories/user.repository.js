@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRepository = void 0;
-const prisma_1 = require("../config/prisma");
+const prisma_1 = require("@/config/prisma");
 exports.userRepository = {
     async findByEmail(email) {
         return prisma_1.prisma.user.findUnique({

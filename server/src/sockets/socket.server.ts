@@ -11,6 +11,7 @@ import { registerPlayerHandlers } from "./handlers/player.handler";
 import { registerChatHandlers } from "./handlers/chat.handler";
 import { registerPresenceHandlers } from "./handlers/presence.handler";
 import { registerVoiceHandlers } from "./handlers/voice.handler";
+import { registerMediaHandlers } from "./handlers/media.handler";
 
 let ioInstance: SocketServer | null = null;
 
@@ -46,6 +47,7 @@ export function initSocketServer(server: HttpServer) {
     registerChatHandlers(io, socket);
     registerPresenceHandlers(io, socket);
     registerVoiceHandlers(io, socket);
+    registerMediaHandlers(io, socket);
     socket.on("disconnect", (reason) => {
       logger.info(`🔌 [Socket.IO] Client disconnected: ${socket.id} (user: ${socket.data.user?.id}), Reason: ${reason}`);
       // Actual cleanup is done inside presence/room handlers listening to disconnect

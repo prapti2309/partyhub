@@ -5,7 +5,7 @@ exports.connectRedis = connectRedis;
 exports.disconnectRedis = disconnectRedis;
 const redis_1 = require("redis");
 const env_1 = require("./env");
-const logger_1 = require("../utils/logger");
+const logger_1 = require("@/utils/logger");
 async function connectRedis() {
     exports.redisClient = (0, redis_1.createClient)({
         url: env_1.env.REDIS_URL,

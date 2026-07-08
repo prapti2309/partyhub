@@ -15,6 +15,8 @@ export class WebRTCManager {
   private peerManager = new PeerManager();
   private signaling = new SignalingClient();
   private localStream: MediaStream | null = null;
+  private videoSenders: Map<string, RTCRtpSender> = new Map();
+  private audioSenders: Map<string, RTCRtpSender> = new Map();
 
   /** Join a voice room */
   async join(roomId: string) {
@@ -43,6 +45,24 @@ export class WebRTCManager {
     await this.signaling.mute({ roomId, muted });
   }
 
+  /** Replace audio track for all peers (e.g., when switching mic) */
+  async replaceAudioTrack(newTrack: MediaStreamTrack | null) {
+    for (const [peerId, sender] of this.audioSenders.entries()) {
+      if (sender && newTrack) {
+        await sender.replaceTrack(newTrack);
+      }
+    }
+  }
+
+  /** Replace video track for all peers (e.g., when turning on camera, or screen sharing) */
+  async replaceVideoTrack(newTrack: MediaStreamTrack | null) {
+    for (const [peerId, sender] of this.videoSenders.entries()) {
+      if (sender) {
+        await sender.replaceTrack(newTrack);
+      }
+    }
+  }
+
   /** Attach local stream to a given HTMLAudioElement (used by UI) */
   attachLocalAudio(element: HTMLAudioElement) {
     if (this.localStream) {
@@ -56,10 +76,19 @@ export class WebRTCManager {
     // When a new peer connects, create a PeerConnection and add local tracks
     this.signaling.onPeerConnected(async ({ socketId }) => {
       const pc = this.peerManager.createPeer(socketId);
-      // Add local tracks to the connection
+      // Add transceivers explicitly to support track replacement
       if (this.localStream) {
-        this.localStream.getTracks().forEach((track) => pc.addTrack(track, this.localStream!));
+        const audioTrack = this.localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          const sender = pc.addTrack(audioTrack, this.localStream);
+          this.audioSenders.set(socketId, sender);
+        }
+      } else {
+         pc.addTransceiver('audio', { direction: 'sendrecv' });
       }
+      
+      const videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
+      this.videoSenders.set(socketId, videoTransceiver.sender);
       // Listen for remote tracks and forward to UI via custom events
       pc.ontrack = (event) => {
         const remoteStream = event.streams[0];
@@ -86,10 +115,19 @@ export class WebRTCManager {
     this.signaling.onOffer(async ({ from, sdp }) => {
       const pc = this.peerManager.createPeer(from);
       await pc.setRemoteDescription({ type: "offer", sdp });
-      // Add local tracks if not already added
+      // Setup transceivers
       if (this.localStream) {
-        this.localStream.getTracks().forEach((track) => pc.addTrack(track, this.localStream!));
+         const audioTrack = this.localStream.getAudioTracks()[0];
+         if (audioTrack) {
+             const sender = pc.addTrack(audioTrack, this.localStream);
+             this.audioSenders.set(from, sender);
+         }
+      } else {
+         pc.addTransceiver('audio', { direction: 'sendrecv' });
       }
+      
+      const videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
+      this.videoSenders.set(from, videoTransceiver.sender);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       await this.signaling.sendAnswer({ roomId, sdp: answer.sdp! });
@@ -114,6 +152,8 @@ export class WebRTCManager {
     // Remote peer disconnected – clean up
     this.signaling.onPeerDisconnected(({ socketId }) => {
       this.peerManager.removePeer(socketId);
+      this.videoSenders.delete(socketId);
+      this.audioSenders.delete(socketId);
     });
   }
 }

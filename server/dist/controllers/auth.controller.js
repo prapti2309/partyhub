@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const auth_service_1 = require("../services/auth.service");
-const asyncHandler_1 = require("../utils/asyncHandler");
-const errors_1 = require("../utils/errors");
-const env_1 = require("../config/env");
+const auth_service_1 = require("@/services/auth.service");
+const asyncHandler_1 = require("@/utils/asyncHandler");
+const errors_1 = require("@/utils/errors");
+const env_1 = require("@/config/env");
 const isProd = env_1.env.NODE_ENV === "production";
 const setRefreshTokenCookie = (res, token) => {
     res.cookie("refreshToken", token, {

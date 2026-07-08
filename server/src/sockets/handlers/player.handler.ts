@@ -67,16 +67,4 @@ export const registerPlayerHandlers = (io: Server, socket: Socket<any, any, any,
       }
     })(socket, payload, ack);
   });
-    await withErrorHandling(async (socket, data, ackFn) => {
-      const validated = validatePayload(SyncSchema)(data, ackFn);
-      if (!validated.success) return;
-      const { roomId } = validated.data as SyncDTO;
-
-      const state = await playerService.handleSync(roomId, userId);
-
-      if (typeof ackFn === "function") {
-        ackFn(createSuccessResponse(state));
-      }
-    })(socket, payload, ack);
-  });
 };

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionRepository = void 0;
-const redis_1 = require("../config/redis");
-const logger_1 = require("../utils/logger");
+const redis_1 = require("@/config/redis");
+const logger_1 = require("@/utils/logger");
 const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 const ROTATION_TTL = 24 * 60 * 60; // 24 hours in seconds
 exports.sessionRepository = {

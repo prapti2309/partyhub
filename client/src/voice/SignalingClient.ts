@@ -59,4 +59,29 @@ export class SignalingClient {
   onIceCandidate(cb: (data: { from: string; roomId: string; candidate: string }) => void) {
     socketManager.getSocket()?.on("voice:ice-candidate", cb);
   }
+
+  // --- Media Events ---
+  async setCamera(payload: { roomId: string; enabled: boolean }) {
+    const socket = await socketManager.connect();
+    return socket.emit(payload.enabled ? SOCKET_EVENTS.MEDIA_CAMERA_ON : SOCKET_EVENTS.MEDIA_CAMERA_OFF, payload);
+  }
+
+  async setScreenSharing(payload: { roomId: string; enabled: boolean }) {
+    const socket = await socketManager.connect();
+    return socket.emit(payload.enabled ? SOCKET_EVENTS.MEDIA_SCREEN_START : SOCKET_EVENTS.MEDIA_SCREEN_STOP, payload);
+  }
+
+  async updateDevice(payload: { roomId: string; hasAudio: boolean; hasVideo: boolean }) {
+    const socket = await socketManager.connect();
+    return socket.emit(SOCKET_EVENTS.MEDIA_DEVICE_UPDATE, payload);
+  }
+
+  async setSpeaking(payload: { roomId: string; isSpeaking: boolean }) {
+    const socket = await socketManager.connect();
+    return socket.emit(SOCKET_EVENTS.MEDIA_SPEAKING, payload);
+  }
+
+  onMediaStateUpdate(cb: (data: any) => void) {
+    socketManager.getSocket()?.on(SOCKET_EVENTS.MEDIA_STATE_UPDATE, cb);
+  }
 }
