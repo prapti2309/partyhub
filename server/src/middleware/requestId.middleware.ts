@@ -1,17 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { v4 as uuidv4 } from "uuid";
+// server/src/middleware/requestId.middleware.ts
+import { Request, Response, NextFunction } from 'express';
+import { crypto } from 'crypto';
+import { requestContext } from '../logging/request-id';
 
-declare global {
-  namespace Express {
-    interface Request {
-      id: string;
-    }
-  }
+export function requestIdMiddleware(req: Request, res: Response, next: NextFunction) {
+  const requestId = (req.headers['x-request-id'] as string) || crypto.randomUUID();
+  res.setHeader('X-Request-ID', requestId);
+
+  requestContext.run({ requestId }, () => {
+    next();
+  });
 }
-
-export const requestIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const reqId = (req.headers["x-request-id"] as string) || uuidv4();
-  req.id = reqId;
-  res.setHeader("x-request-id", reqId);
-  next();
-};

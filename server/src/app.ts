@@ -4,11 +4,13 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { requestIdMiddleware } from "./middleware/requestId.middleware";
+import { tracingMiddleware } from "./middleware/tracing.middleware";
+import { metricsMiddleware } from "./middleware/metrics.middleware";
 import { errorHandler } from "./middleware/error.middleware";
-import { prisma } from "./config/prisma";
-import { redisClient } from "./config/redis";
 import authRouter from "./routes/auth.routes";
 import roomRouter from "./routes/room.routes";
+import healthRouter from "./health/health.controller";
+import monitoringRouter from "./dashboard/monitoring.routes";
 
 export function createApp() {
   const app = express();
@@ -27,11 +29,15 @@ export function createApp() {
   app.use(cookieParser());
 
   app.use(requestIdMiddleware);
+  app.use(tracingMiddleware);
+  app.use(metricsMiddleware);
   app.use("/api/", limiter);
 
   // Mount Auth Router
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/rooms", roomRouter);
+  app.use("/api/v1/monitoring", monitoringRouter);
+  app.use("/", healthRouter);
 
   // Health Route Version 1
   app.get("/api/v1/health", async (_req, res) => {
