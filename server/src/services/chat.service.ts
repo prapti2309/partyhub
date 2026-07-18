@@ -1,5 +1,4 @@
 import { prisma } from '@/config/prisma';
-import { roomRepository } from '@/repositories/room.repository';
 import { ERROR_CODES } from '@/sockets/socket.constants';
 import { getSocketIO } from '@/sockets/socket.server';
 import { SOCKET_EVENTS } from '@/sockets/socket.constants';

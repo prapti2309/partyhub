@@ -16,6 +16,7 @@ interface PlayerStoreState {
   setLocalState: (state: any) => void;
   // syncState now stores full server snapshot
   syncState: (state: any) => void;
+  setSpeed: (speed: number) => void;
 }
 
 export const usePlayerStore = create<PlayerStoreState>((set) => ({
@@ -58,4 +59,5 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
       speed: state.playbackRate,
     });
   },
+  setSpeed: (speed: number) => set({ speed }),
 }));

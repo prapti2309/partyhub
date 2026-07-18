@@ -23,7 +23,7 @@ export interface AuthState {
 }
 
 // --- ROOM TYPES ---
-export type RoomMemberRole = "OWNER" | "COHOST" | "VIEWER";
+export type RoomMemberRole = "OWNER" | "COHOST" | "VIEWER" | "PARTICIPANT";
 
 export interface RoomMember {
   userId: string;
@@ -35,6 +35,7 @@ export interface RoomMember {
   isCameraOn?: boolean;
   isScreenSharing?: boolean;
   speaking?: boolean;
+  isOnline?: boolean;
 }
 
 export interface RoomSettings {

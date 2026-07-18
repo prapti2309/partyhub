@@ -13,7 +13,7 @@ interface RoomStoreState {
   updateParticipantStatus: (userId: string, isOnline: boolean) => void;
   updateRoomOwner: (ownerId: string) => void;
   createRoom: (title: string, settings: any, capacity: number, ownerName: string) => Promise<any>;
-  joinRoom: (roomId: string) => void;
+  joinRoom: (roomId: string, username?: string) => Promise<any>;
   leaveRoom: () => void;
   kickMember: (userId: string) => void;
 }
@@ -89,7 +89,9 @@ export const useRoomStore = create<RoomStoreState>((set) => ({
   },
 
   // These are handled by useRoomSocket hook; these are no-ops in the store
-  joinRoom: (_roomId: string) => {},
+  joinRoom: async (_roomId: string, _username?: string) => {
+    return { room: null };
+  },
   leaveRoom: () => {},
   kickMember: (_userId: string) => {},
 }));

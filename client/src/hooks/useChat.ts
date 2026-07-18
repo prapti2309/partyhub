@@ -48,7 +48,7 @@ export const useChat = (roomId: string) => {
       setTyping(payload.userId, false);
     };
     const onReadReceipt = (payload: { userId: string; lastReadMessageId: string }) => {
-      if (payload.userId === socket.data.user.id) {
+      if (payload.userId === (socket as any).data?.user?.id) {
         // This client read its own messages – clear unread counter
         resetUnread();
         markRead(payload.lastReadMessageId);

@@ -84,7 +84,7 @@ export const ChatPanel: React.FC<{ roomId: string }> = ({ roomId }) => {
         {messages.map((msg) => (
           <li key={msg.id} className="message-item">
             <div className="message-meta">
-              <strong>{msg.sender.username}</strong>
+              <strong>{msg.username}</strong>
               <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString()}</span>
             </div>
             <div className="message-content">{msg.content}</div>

@@ -10,6 +10,7 @@ export interface VoiceParticipant {
   isCameraOn: boolean;
   isMuted: boolean;
   speaking: boolean;
+  isScreenSharing?: boolean;
 }
 
 interface VoiceStoreState {

@@ -18,6 +18,8 @@ import { useSocket } from "../../../contexts/SocketContext";
 import { RoomMember } from "../../../types";
 import { VideoGrid } from "../../../features/media/components/VideoGrid";
 import { MediaToolbar } from "../../../features/media/components/MediaToolbar";
+import { PresenceSidebar } from "../../../components/PresenceSidebar";
+import { ChatPanel } from "../../../components/ChatPanel";
 import {
   Play,
   Pause,

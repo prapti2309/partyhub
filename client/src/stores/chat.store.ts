@@ -14,6 +14,7 @@ export interface ChatState {
   addReaction: (reaction: MessageReaction) => void;
   removeReaction: (messageId: string, userId: string, emoji: string) => void;
   setTyping: (userId: string, isTyping: boolean) => void;
+  setTypist: (userId: string, isTyping: boolean) => void;
   incrementUnread: () => void;
   resetUnread: () => void;
   markRead: (lastReadMessageId: string) => void;
@@ -54,13 +55,19 @@ export const useChatStore = create<ChatState>()(
             ? {
                 ...m,
                 reactions: (m.reactions || []).filter(
-                  (r) => !(r.userId === userId && r.emoji === emoji)
+                  (r: any) => !(r.userId === userId && r.emoji === emoji)
                 ),
               }
             : m
         ),
       })),
     setTyping: (userId, isTyping) =>
+      set((state) => ({
+        typingUsers: isTyping
+          ? Array.from(new Set([...state.typingUsers, userId]))
+          : state.typingUsers.filter((id) => id !== userId),
+      })),
+    setTypist: (userId, isTyping) =>
       set((state) => ({
         typingUsers: isTyping
           ? Array.from(new Set([...state.typingUsers, userId]))

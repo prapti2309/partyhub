@@ -16,7 +16,7 @@ export const useRoomSocket = (roomId: string) => {
       addParticipant({
         userId: data.userId,
         username: data.username,
-        avatar: data.avatar,
+        avatarUrl: data.avatar,
         role: "PARTICIPANT",
         isOnline: true,
       });

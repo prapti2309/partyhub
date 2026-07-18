@@ -9,12 +9,17 @@ interface WebRTCContextType {
   screenStream: MediaStream | null;
   isConnecting: boolean;
   activePeersCount: number;
-  joinVoiceChannel: () => Promise<void>;
-  leaveVoiceChannel: () => void;
+  joinVoiceChannel: (roomId?: string) => Promise<void>;
+  leaveVoiceChannel: (roomId?: string) => void;
   startLocalVideo: () => Promise<void>;
   stopLocalVideo: () => void;
   startScreenShare: () => Promise<void>;
   stopScreenShare: () => void;
+  signaling: any;
+  replaceVideoTrack: (track: MediaStreamTrack | null) => Promise<void>;
+  replaceAudioTrack: (track: MediaStreamTrack | null) => Promise<void>;
+  setMute: (roomId: string, muted: boolean) => Promise<void>;
+  isScreenSharing: boolean;
 }
 
 const WebRTCContext = createContext<WebRTCContextType | undefined>(undefined);
@@ -50,22 +55,40 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [isInVoiceChannel]);
 
-  const joinVoiceChannel = async () => {
+  const joinVoiceChannel = async (roomId?: string) => {
     setIsConnecting(true);
     console.log("🔊 [WebRTC] Initiating peer connection for voice channel...");
 
     // Simulate signaling server connection delay
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    voiceStore.joinVoice();
+    await voiceStore.joinVoice(roomId || "");
     setIsConnecting(false);
     console.log("🔊 [WebRTC] WebRTC Peer Connection Established");
   };
 
-  const leaveVoiceChannel = () => {
+  const leaveVoiceChannel = (roomId?: string) => {
     console.log("🔊 [WebRTC] Disconnecting WebRTC channel...");
-    voiceStore.leaveVoice();
+    voiceStore.leaveVoice(roomId || "");
     cleanupStreams();
+  };
+
+  const replaceVideoTrack = async (track: MediaStreamTrack | null) => {
+    const { WebRTCManager } = await import("../voice/WebRTCManager");
+    const manager = new WebRTCManager();
+    await manager.replaceVideoTrack(track);
+  };
+
+  const replaceAudioTrack = async (track: MediaStreamTrack | null) => {
+    const { WebRTCManager } = await import("../voice/WebRTCManager");
+    const manager = new WebRTCManager();
+    await manager.replaceAudioTrack(track);
+  };
+
+  const setMute = async (roomId: string, muted: boolean) => {
+    const { WebRTCManager } = await import("../voice/WebRTCManager");
+    const manager = new WebRTCManager();
+    await manager.setMute(roomId, muted);
   };
 
   const startLocalVideo = async () => {
@@ -167,6 +190,15 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => clearInterval(interval);
   }, [isInVoiceChannel, voiceStore.voicePeers]);
 
+  // Create signaling instance
+  const [signaling] = useState(() => {
+    if (typeof window !== "undefined") {
+      const { SignalingClient } = require("../voice/SignalingClient");
+      return new SignalingClient();
+    }
+    return null;
+  });
+
   return (
     <WebRTCContext.Provider
       value={{
@@ -180,6 +212,11 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         stopLocalVideo,
         startScreenShare,
         stopScreenShare,
+        signaling,
+        replaceVideoTrack,
+        replaceAudioTrack,
+        setMute,
+        isScreenSharing,
       }}
     >
       {children}

@@ -32,6 +32,8 @@ export const SOCKET_EVENTS = {
   PLAYER_ENDED: "player:ended",
   PLAYER_STATE: "player:state",
   PLAYER_ERROR: "player:error",
+  PLAYBACK_BROADCAST: "player:playback_broadcast",
+  PLAYBACK_SYNC: "player:sync",
 
   // Chat Events
   CHAT_SEND: "chat:send",
@@ -58,6 +60,14 @@ export const SOCKET_EVENTS = {
   VOICE_PEER_DISCONNECTED: "voice:peer-disconnected",
   VOICE_ERROR: "voice:error",
   VOICE_STATE: "voice:state",
+
+  // Presence Events
+  PRESENCE_JOIN: "presence:join",
+  PRESENCE_LEAVE: "presence:leave",
+  PRESENCE_STATUS_UPDATE: "presence:status_update",
+  PRESENCE_TYPING_START: "presence:typing_start",
+  PRESENCE_TYPING_STOP: "presence:typing_stop",
+  PRESENCE_SNAPSHOT_REQUEST: "presence:snapshot_request",
 
   // Media (Video/Screen) Events
   MEDIA_CAMERA_ON: "media:camera:on",

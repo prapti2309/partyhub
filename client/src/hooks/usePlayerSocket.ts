@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { SOCKET_EVENTS } from "@/sockets/events";
 import { usePlayerStore } from "@/stores/player.store";
 import { socketManager } from "@/lib/socket/SocketManager";
+import { useSocket } from "@/contexts/SocketContext";
 
 export const usePlayerSocket = (roomId: string) => {
   const { socket } = useSocket();
