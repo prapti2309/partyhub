@@ -341,7 +341,7 @@ export default function Home() {
                   Perfect for close friends and couples.
                 </p>
                 <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-text-primary">$0</span>
+                  <span className="text-4xl font-extrabold text-text-primary">₹0</span>
                   <span className="text-sm font-semibold text-text-secondary">/month</span>
                 </div>
                 <ul className="mt-8 space-y-4 text-sm text-text-secondary">
@@ -386,7 +386,7 @@ export default function Home() {
                   Unlock large rooms, HD streams, and custom themes.
                 </p>
                 <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-text-primary">$4.99</span>
+                  <span className="text-4xl font-extrabold text-text-primary">₹99</span>
                   <span className="text-sm font-semibold text-text-secondary">/month</span>
                 </div>
                 <ul className="mt-8 space-y-4 text-sm text-text-secondary">
