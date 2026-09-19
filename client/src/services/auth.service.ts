@@ -5,58 +5,48 @@ export const authService = {
   login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
     try {
       const response = await authApi.login(email, password);
-      return response.data;
-    } catch (e) {
-      console.warn("[Auth Service] Falling back to mock login");
-      const username = email.split("@")[0] || "neon_user";
-      // Simulated response
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return {
-        user: {
-          id: "user-current",
-          username,
-          email,
-          role: "USER",
-          createdAt: new Date().toISOString(),
-          profile: {
-            displayName: username,
-            avatarUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${username}`,
-            bio: "Hey there! I am using WatchParty.",
-            status: "Chilling",
-          },
-        },
-        token: "mock_jwt_token_" + Math.random().toString(36).substring(2),
-      };
+      const token = response.data.accessToken || (response.data as any).token || "";
+      return { user: response.data.user, token };
+    } catch (e: any) {
+      const serverErrors = e.response?.data?.errors;
+      const firstError =
+        Array.isArray(serverErrors) && serverErrors.length > 0 ? serverErrors[0].message : null;
+      const message =
+        firstError ||
+        e.response?.data?.message ||
+        e.message ||
+        "Failed to sign in. Please verify credentials.";
+      console.warn("[Auth Service] Login failed:", message);
+      throw new Error(message);
     }
   },
 
   register: async (
     username: string,
     email: string,
-    passwordHash: string
+    password: string
   ): Promise<{ user: User; token: string }> => {
     try {
-      const response = await authApi.register(username, email, passwordHash);
-      return response.data;
-    } catch (e) {
-      console.warn("[Auth Service] Falling back to mock registration");
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return {
-        user: {
-          id: "user-current",
-          username,
-          email,
-          role: "USER",
-          createdAt: new Date().toISOString(),
-          profile: {
-            displayName: username,
-            avatarUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${username}`,
-            bio: "Hey there! I am using WatchParty.",
-            status: "Chilling",
-          },
-        },
-        token: "mock_jwt_token_" + Math.random().toString(36).substring(2),
-      };
+      const response = await authApi.register(username, email, password);
+      let token = response.data.accessToken || (response.data as any).token;
+      if (!token) {
+        // Auto-login to obtain accessToken after registration
+        const loginRes = await authApi.login(email, password);
+        token = loginRes.data.accessToken || (loginRes.data as any).token || "";
+        return { user: loginRes.data.user || response.data.user, token };
+      }
+      return { user: response.data.user, token };
+    } catch (e: any) {
+      const serverErrors = e.response?.data?.errors;
+      const firstError =
+        Array.isArray(serverErrors) && serverErrors.length > 0 ? serverErrors[0].message : null;
+      const message =
+        firstError ||
+        e.response?.data?.message ||
+        e.message ||
+        "Failed to register. Please try again.";
+      console.warn("[Auth Service] Registration failed:", message);
+      throw new Error(message);
     }
   },
 

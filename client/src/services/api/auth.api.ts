@@ -3,13 +3,16 @@ import { User } from "@/types";
 
 export const authApi = {
   login: (email: string, password: string) =>
-    apiClient.post<{ user: User; token: string }>("/auth/login", { email, password }),
-
-  register: (username: string, email: string, passwordHash: string) =>
-    apiClient.post<{ user: User; token: string }>("/auth/register", {
-      username,
+    apiClient.post<{ user: User; accessToken?: string; token?: string }>("/auth/login", {
       email,
-      passwordHash,
+      password,
+    }),
+
+  register: (username: string, email: string, password: string) =>
+    apiClient.post<{ user: User; accessToken?: string; token?: string }>("/auth/register", {
+      displayName: username,
+      email,
+      password,
     }),
 
   logout: () => apiClient.post<void>("/auth/logout"),

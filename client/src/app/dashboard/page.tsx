@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Film, Sparkles, Tv, Compass, Play, Plus, Clock } from "lucide-react";
 import { useAuthStore } from "../../stores/auth.store";
@@ -25,14 +25,20 @@ export default function DashboardPage() {
   const { createRoom } = useRoomStore();
   const { success } = useToast();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Route protection
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (mounted && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [mounted, isAuthenticated, router]);
 
-  if (!isAuthenticated || !user) {
+  if (!mounted || !isAuthenticated || !user) {
     return null;
   }
 
@@ -200,25 +206,11 @@ export default function DashboardPage() {
               <span>Recent Activity History</span>
             </h3>
 
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between text-xs text-text-secondary py-1 border-b border-border/30">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary" />
-                  <span>
-                    Hosted <strong className="text-text-primary">Neon Dome</strong> watch room
-                  </span>
-                </div>
-                <span>3 days ago</span>
-              </div>
-              <div className="flex items-center justify-between text-xs text-text-secondary py-1 border-b border-border/30">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-success" />
-                  <span>
-                    Joined <strong className="text-text-primary">Synth Samurai</strong> party
-                  </span>
-                </div>
-                <span>4 days ago</span>
-              </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center text-text-secondary">
+              <p className="text-xs">No recent watch history yet.</p>
+              <p className="text-[11px] text-text-secondary/70 mt-1">
+                Create or join a watch party to start watching together!
+              </p>
             </div>
           </Card>
         </div>

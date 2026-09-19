@@ -12,6 +12,14 @@ export const useRoomSocket = (roomId: string) => {
   useEffect(() => {
     if (!socket || !roomId) return;
 
+    // Automatically join room channel via socket when entering room
+    socketManager
+      .emitWithAck("room:join", {
+        roomId,
+        roomCode: useRoomStore.getState().activeRoom?.code || roomId,
+      })
+      .catch(() => {});
+
     socket.on("room:participant_joined", (data) => {
       addParticipant({
         userId: data.userId,
@@ -35,18 +43,26 @@ export const useRoomSocket = (roomId: string) => {
       socket.off("room:participant_joined");
       socket.off("room:participant_left");
       socket.off("room:ownership_transferred");
+      socketManager.emitWithAck("room:leave", { roomId }).catch(() => {});
     };
   }, [socket, roomId, addParticipant, removeParticipant]);
 
-  const joinRoom = async (roomCode: string, username?: string) => {
-    const response = await socketManager.emitWithAck("room:join", { roomCode, username });
-    setRoomData(response.room);
+  const joinRoom = async (roomCode: string, username?: string, password?: string) => {
+    const response = await socketManager.emitWithAck("room:join", {
+      roomId: roomCode,
+      roomCode,
+      username,
+      password,
+    });
+    if (response?.room) {
+      setRoomData(response.room);
+    }
     return response;
   };
 
   const leaveRoom = async () => {
     if (roomId) {
-      await socketManager.emitWithAck("room:leave", { roomId });
+      await socketManager.emitWithAck("room:leave", { roomId }).catch(() => {});
       useRoomStore.getState().clearRoom();
     }
   };

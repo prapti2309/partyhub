@@ -20,13 +20,18 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (isAuthenticated) {
-      socketManager.connect().then((s) => {
-        setSocket(s);
-        setIsConnected(s.connected);
+      socketManager
+        .connect()
+        .then((s) => {
+          setSocket(s);
+          setIsConnected(s.connected);
 
-        s.on("connect", () => setIsConnected(true));
-        s.on("disconnect", () => setIsConnected(false));
-      }).catch(console.error);
+          s.on("connect", () => setIsConnected(true));
+          s.on("disconnect", () => setIsConnected(false));
+        })
+        .catch((err) => {
+          console.warn("[SocketContext] Socket connection error:", err.message);
+        });
     } else {
       socketManager.disconnect();
       setSocket(null);

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Friend, FriendRequest } from "../types";
-import { MOCK_FRIENDS, MOCK_FRIEND_REQUESTS } from "../utils/mock-data";
+import { friendService } from "../services/friend.service";
 
 interface FriendsStoreState {
   friends: Friend[];
@@ -20,20 +20,28 @@ export const useFriendsStore = create<FriendsStoreState>((set) => ({
 
   fetchFriendsAndRequests: async () => {
     set({ isLoading: true });
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    set({
-      friends: MOCK_FRIENDS,
-      requests: MOCK_FRIEND_REQUESTS,
-      isLoading: false,
-    });
+    try {
+      const [friends, requests] = await Promise.all([
+        friendService.getFriends(),
+        friendService.getFriendRequests(),
+      ]);
+      set({
+        friends: friends || [],
+        requests: requests || [],
+        isLoading: false,
+      });
+    } catch {
+      set({ friends: [], requests: [], isLoading: false });
+    }
   },
 
   sendFriendRequest: async (username: string) => {
     set({ isLoading: true });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // In mock, let's just complete successfully
-    set({ isLoading: false });
+    try {
+      await friendService.sendRequest(username);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   acceptFriendRequest: async (requestId: string) => {

@@ -22,14 +22,21 @@ export const Navigation: React.FC = () => {
   const { notifications, unreadCount, fetchNotifications, markAsRead } = useNotificationStore();
   const { requests, fetchFriendsAndRequests } = useFriendsStore();
 
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  const isAuth = mounted && isAuthenticated;
+
+  useEffect(() => {
+    if (isAuth) {
       void fetchNotifications();
       void fetchFriendsAndRequests();
     }
-  }, [isAuthenticated, fetchNotifications, fetchFriendsAndRequests]);
+  }, [isAuth, fetchNotifications, fetchFriendsAndRequests]);
 
   const handleLogout = () => {
     logout();
@@ -59,7 +66,7 @@ export const Navigation: React.FC = () => {
     },
   ];
 
-  if (user?.role === "ADMIN") {
+  if (isAuth && user?.role === "ADMIN") {
     authNavItems.push({
       label: "Admin Panel",
       href: "/admin/dashboard",
@@ -134,10 +141,7 @@ export const Navigation: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left Side: Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link
-            href={isAuthenticated ? "/dashboard" : "/"}
-            className="flex items-center gap-2 group"
-          >
+          <Link href={isAuth ? "/dashboard" : "/"} className="flex items-center gap-2 group">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary group-hover:bg-primary-hover transition-colors">
               <Film className="h-5 w-5 text-white" />
             </div>
@@ -148,7 +152,7 @@ export const Navigation: React.FC = () => {
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1.5">
-            {!isAuthenticated
+            {!isAuth
               ? publicNavItems.map((item) => (
                   <Link
                     key={item.href}
@@ -188,7 +192,7 @@ export const Navigation: React.FC = () => {
 
         {/* Right Side: Account Controls */}
         <div className="flex items-center gap-2.5">
-          {isAuthenticated ? (
+          {isAuth ? (
             <>
               {/* Notification Center */}
               {notificationItems.length > 0 ? (
@@ -252,7 +256,7 @@ export const Navigation: React.FC = () => {
       >
         <div className="flex flex-col gap-5 py-4">
           <nav className="flex flex-col gap-2">
-            {!isAuthenticated
+            {!isAuth
               ? publicNavItems.map((item) => (
                   <Link
                     key={item.href}
@@ -291,7 +295,7 @@ export const Navigation: React.FC = () => {
                 ))}
           </nav>
 
-          {!isAuthenticated && (
+          {!isAuth && (
             <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
               <Button
                 variant="outline"

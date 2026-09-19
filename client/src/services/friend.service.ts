@@ -1,23 +1,22 @@
 import { friendApi } from "./api/friend.api";
 import { Friend, FriendRequest } from "@/types";
-import { MOCK_FRIENDS, MOCK_FRIEND_REQUESTS } from "../utils/mock-data";
 
 export const friendService = {
   getFriends: async (): Promise<Friend[]> => {
     try {
       const response = await friendApi.getFriends();
-      return response.data;
+      return response.data || [];
     } catch (e) {
-      return MOCK_FRIENDS;
+      return [];
     }
   },
 
   getFriendRequests: async (): Promise<FriendRequest[]> => {
     try {
       const response = await friendApi.getFriendRequests();
-      return response.data;
+      return response.data || [];
     } catch (e) {
-      return MOCK_FRIEND_REQUESTS;
+      return [];
     }
   },
 

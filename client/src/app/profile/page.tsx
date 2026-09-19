@@ -36,8 +36,13 @@ export default function ProfilePage() {
   const { user, isAuthenticated, updateProfile } = useAuthStore();
   const { success } = useToast();
 
+  const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [seed, setSeed] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
@@ -54,7 +59,7 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (mounted && !isAuthenticated) {
       router.replace("/login");
       return;
     }
@@ -65,9 +70,9 @@ export default function ProfilePage() {
       setValue("status", user.profile?.status || "");
       setSeed(user.username);
     }
-  }, [user, isAuthenticated, router, setValue]);
+  }, [mounted, user, isAuthenticated, router, setValue]);
 
-  if (!isAuthenticated || !user) return null;
+  if (!mounted || !isAuthenticated || !user) return null;
 
   const onSubmit = async (data: ProfileFormValues) => {
     setIsSubmitting(true);

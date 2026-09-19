@@ -22,10 +22,10 @@ import { useToast } from "../../../components/ui/Toast";
 
 const createRoomSchema = z.object({
   name: z.string().min(3, { message: "Room name must be at least 3 characters." }).max(30),
-  isPublic: z.boolean(),
+  isPublic: z.preprocess((val) => val === "true" || val === true, z.boolean()),
   password: z.string().optional(),
   maxCapacity: z.coerce.number().min(2).max(50),
-  sharedControls: z.boolean(),
+  sharedControls: z.boolean().default(false),
 });
 
 type CreateRoomFormValues = z.infer<typeof createRoomSchema>;
@@ -34,15 +34,20 @@ export default function CreateRoomPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
   const { createRoom } = useRoomStore();
-  const { success } = useToast();
+  const { success, error: toastError } = useToast();
 
+  const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [mounted, isAuthenticated, router]);
 
   const {
     register,
@@ -61,12 +66,14 @@ export default function CreateRoomPage() {
   });
 
   const isPublic = watch("isPublic");
+  const isPrivateSelected = String(isPublic) === "false";
 
-  if (!isAuthenticated || !user) return null;
+  if (!mounted || !isAuthenticated || !user) return null;
 
   const onSubmit = async (data: CreateRoomFormValues) => {
     setIsSubmitting(true);
     try {
+      const isPrivate = !data.isPublic;
       const roomSettings = {
         sharedControls: data.sharedControls,
         chatEnabled: true,
@@ -75,12 +82,23 @@ export default function CreateRoomPage() {
         guestAllowed: true,
       };
 
-      const room = await createRoom(data.name, roomSettings, data.maxCapacity, user.username);
+      const room = await createRoom(
+        data.name,
+        roomSettings,
+        data.maxCapacity,
+        user.username,
+        isPrivate,
+        data.password && data.password.trim() ? data.password.trim() : undefined
+      );
 
       success(`Room "${data.name}" created successfully! Code: ${room.code}`, "Room Created");
       router.push(`/room/${room.code}`);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Room creation error", e);
+      toastError(
+        e?.response?.data?.message || e.message || "Failed to create room. Please try again.",
+        "Creation Failed"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -146,7 +164,7 @@ export default function CreateRoomPage() {
                 </div>
 
                 {/* Password field if room is private */}
-                {!isPublic && (
+                {isPrivateSelected && (
                   <Input
                     label="Optional Room Password"
                     type="password"

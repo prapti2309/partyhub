@@ -28,7 +28,13 @@ const registerSchema = z.object({
       message: "Only alphanumeric characters and underscores are allowed.",
     }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long." })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
+    .regex(/[0-9]/, { message: "Password must contain at least one number." })
+    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." }),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -57,12 +63,14 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      // Zustand auth store triggers register simulator
-      await registerAction(data.username, data.email);
+      await registerAction(data.username, data.email, data.password);
       success("Account created successfully!", `Welcome to WatchParty, ${data.username}!`);
       router.push("/dashboard");
-    } catch (e) {
-      toastError("Failed to register. Please try another email.", "Registration Error");
+    } catch (e: any) {
+      toastError(
+        e?.message || "Failed to register. Please try another email.",
+        "Registration Error"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -71,11 +79,16 @@ export default function RegisterPage() {
   const handleOAuth = (provider: string) => {
     success(`Redirecting to ${provider} OAuth...`, `${provider} Sign Up`);
     setTimeout(async () => {
-      await registerAction(
-        `${provider.toLowerCase()}_member`,
-        `${provider.toLowerCase()}@watchparty.app`
-      );
-      router.push("/dashboard");
+      try {
+        await registerAction(
+          `${provider.toLowerCase()}_member`,
+          `${provider.toLowerCase()}@watchparty.app`,
+          "WatchParty@OAuth123"
+        );
+        router.push("/dashboard");
+      } catch {
+        toastError("OAuth mock registration failed.", "OAuth Error");
+      }
     }, 1000);
   };
 

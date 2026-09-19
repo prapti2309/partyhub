@@ -5,7 +5,7 @@ services:
   api:
     build:
       context: ./server
-      target: builder
+      dockerfile: Dockerfile
     command: npm run dev
     ports:
       - "4000:4000"

@@ -49,16 +49,14 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      // Create a username from email for mock auth profile
-      const username = data.email.split("@")[0] || "member";
+      await login(data.email, data.password);
+      const user = useAuthStore.getState().user;
+      const displayName = user?.profile?.displayName || user?.username || data.email.split("@")[0];
 
-      // Zustand auth store triggers mock login with delay
-      await login(username, data.email);
-
-      success("Logged in successfully!", `Welcome back, ${username}!`);
+      success("Logged in successfully!", `Welcome back, ${displayName}!`);
       router.push("/dashboard");
-    } catch (e) {
-      toastError("Failed to sign in. Please verify credentials.", "Login Error");
+    } catch (e: any) {
+      toastError(e?.message || "Failed to sign in. Please verify credentials.", "Login Error");
     } finally {
       setIsSubmitting(false);
     }
@@ -67,8 +65,12 @@ export default function LoginPage() {
   const handleOAuth = (provider: string) => {
     success(`Redirecting to ${provider} OAuth...`, `${provider} Login`);
     setTimeout(async () => {
-      await login(`${provider}_user`, `${provider.toLowerCase()}@watchparty.app`);
-      router.push("/dashboard");
+      try {
+        await login(`${provider.toLowerCase()}@watchparty.app`, "WatchParty@OAuth123");
+        router.push("/dashboard");
+      } catch {
+        toastError("OAuth mock authentication failed.", "OAuth Error");
+      }
     }, 1000);
   };
 
