@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useVoiceStore } from "../stores/voice.store";
 import { useRoomStore } from "../stores/room.store";
+import { useAuthStore } from "../stores/auth.store";
+import { SignalingClient } from "../voice/SignalingClient";
 
 interface WebRTCContextType {
   localStream: MediaStream | null;
@@ -119,7 +121,8 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setLocalStream(stream);
         }
       }
-      voiceStore.updatePeerVoiceState("user-current", { isCameraOn: true });
+      const currentUserId = useAuthStore.getState().user?.id || "me";
+      voiceStore.updatePeerVoiceState(currentUserId, { isCameraOn: true });
       console.log("📷 [WebRTC] Camera stream attached");
     } catch (e) {
       console.error("Failed to start local camera stream", e);
@@ -131,7 +134,8 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       localStream.getTracks().forEach((track) => track.stop());
       setLocalStream(null);
     }
-    voiceStore.updatePeerVoiceState("user-current", { isCameraOn: false });
+    const currentUserId = useAuthStore.getState().user?.id || "me";
+    voiceStore.updatePeerVoiceState(currentUserId, { isCameraOn: false });
     console.log("📷 [WebRTC] Local camera stream stopped");
   };
 
@@ -151,11 +155,11 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             voiceStore.toggleScreenShare();
           };
         } catch {
-          // Mock screen share
           setScreenStream(new MediaStream());
         }
       }
-      voiceStore.updatePeerVoiceState("user-current", { isScreenSharing: true });
+      const currentUserId = useAuthStore.getState().user?.id || "me";
+      voiceStore.updatePeerVoiceState(currentUserId, { isScreenSharing: true });
       console.log("🖥️ [WebRTC] Screen share stream active");
     } catch (e) {
       console.error("Failed to start screen share stream", e);
@@ -167,33 +171,14 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       screenStream.getTracks().forEach((track) => track.stop());
       setScreenStream(null);
     }
-    voiceStore.updatePeerVoiceState("user-current", { isScreenSharing: false });
+    const currentUserId = useAuthStore.getState().user?.id || "me";
+    voiceStore.updatePeerVoiceState(currentUserId, { isScreenSharing: false });
     console.log("🖥️ [WebRTC] Screen share stream stopped");
   };
-
-  // Setup periodic speaking simulations for mock peers
-  useEffect(() => {
-    if (!isInVoiceChannel) return;
-
-    const interval = setInterval(() => {
-      const peers = voiceStore.voicePeers;
-      if (peers.length === 0) return;
-
-      // Randomly pick a peer and toggle speaking
-      const randomPeerIndex = Math.floor(Math.random() * peers.length);
-      const peer = peers[randomPeerIndex];
-      if (!peer.isMuted) {
-        voiceStore.setSpeaking(peer.userId, !peer.speaking);
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [isInVoiceChannel, voiceStore.voicePeers]);
 
   // Create signaling instance
   const [signaling] = useState(() => {
     if (typeof window !== "undefined") {
-      const { SignalingClient } = require("../voice/SignalingClient");
       return new SignalingClient();
     }
     return null;
