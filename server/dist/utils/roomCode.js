@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateRoomCode = generateRoomCode;
-const prisma_1 = require("@/config/prisma");
+const prisma_1 = require("../config/prisma");
 /**
  * Generates a random uppercase alphanumeric room code of length 6.
  */

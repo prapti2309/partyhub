@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.permissionService = exports.PermissionService = void 0;
-const prisma_1 = require("@/config/prisma");
-const redis_1 = require("@/config/redis");
+const prisma_1 = require("../config/prisma");
+const redis_1 = require("../config/redis");
 class PermissionService {
     /**
      * Resolves a user's role in a specific room.

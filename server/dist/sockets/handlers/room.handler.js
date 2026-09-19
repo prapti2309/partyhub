@@ -3,15 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerRoomHandlers = void 0;
 const socket_constants_1 = require("../socket.constants");
 const socket_middleware_1 = require("../socket.middleware");
-const room_validator_1 = require("@/validators/room.validator");
-const room_service_1 = require("@/services/room.service");
-const presence_service_1 = require("@/services/presence.service");
+const room_validator_1 = require("../../validators/room.validator");
+const room_service_1 = require("../../services/room.service");
+const presence_service_1 = require("../../services/presence.service");
 const socket_utils_1 = require("../socket.utils");
 const socket_registry_1 = require("../socket.registry");
 const registerRoomHandlers = (io, socket) => {
     const userId = socket.data.user.id;
     socket.on(socket_constants_1.SOCKET_EVENTS.ROOM_JOIN, async (payload, ack) => {
-        await (0, socket_middleware_1.withErrorHandling)(async (socket, data, ackFn) => {
+        await (0, socket_middleware_1.withErrorHandling)(async (_sock, data, ackFn) => {
             const validated = (0, socket_middleware_1.validatePayload)(room_validator_1.JoinRoomSchema)(data, ackFn);
             if (!validated.success)
                 return;
@@ -29,7 +29,7 @@ const registerRoomHandlers = (io, socket) => {
         })(socket, payload, ack);
     });
     socket.on(socket_constants_1.SOCKET_EVENTS.ROOM_LEAVE, async (payload, ack) => {
-        await (0, socket_middleware_1.withErrorHandling)(async (socket, data, ackFn) => {
+        await (0, socket_middleware_1.withErrorHandling)(async (_sock, data, ackFn) => {
             const validated = (0, socket_middleware_1.validatePayload)(room_validator_1.LeaveRoomSchema)(data, ackFn);
             if (!validated.success)
                 return;
@@ -45,7 +45,7 @@ const registerRoomHandlers = (io, socket) => {
         })(socket, payload, ack);
     });
     socket.on(socket_constants_1.SOCKET_EVENTS.ROOM_TRANSFER, async (payload, ack) => {
-        await (0, socket_middleware_1.withErrorHandling)(async (socket, data, ackFn) => {
+        await (0, socket_middleware_1.withErrorHandling)(async (_sock, data, ackFn) => {
             const validated = (0, socket_middleware_1.validatePayload)(room_validator_1.TransferOwnerSchema)(data, ackFn);
             if (!validated.success)
                 return;

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socketAuthenticationMiddleware = void 0;
-const jwt_1 = require("@/utils/jwt");
-const session_repository_1 = require("@/repositories/session.repository");
-const user_repository_1 = require("@/repositories/user.repository");
+const jwt_1 = require("../utils/jwt");
+const session_repository_1 = require("../repositories/session.repository");
+const user_repository_1 = require("../repositories/user.repository");
 const socket_constants_1 = require("./socket.constants");
 const socketAuthenticationMiddleware = async (socket, next) => {
     const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization;

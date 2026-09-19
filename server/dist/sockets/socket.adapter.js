@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRedisAdapter = void 0;
 const redis_adapter_1 = require("@socket.io/redis-adapter");
-const redis_1 = require("@/config/redis");
+const redis_1 = require("../config/redis");
 const getRedisAdapter = () => {
     const pubClient = redis_1.redisClient;
     if (!pubClient) {

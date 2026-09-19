@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.voiceRepository = void 0;
 // src/repositories/voice.repository.ts
-const redis_1 = require("@/config/redis");
+const redis_1 = require("../config/redis");
 /**
  * Redis‑backed storage for voice session state.
  * We keep a per‑room set of participant socket IDs and a map of

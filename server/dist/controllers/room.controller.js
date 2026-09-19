@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.roomController = void 0;
-const prisma_1 = require("@/config/prisma");
-const room_service_1 = require("@/services/room.service");
-const room_repository_1 = require("@/repositories/room.repository");
-const asyncHandler_1 = require("@/utils/asyncHandler");
-const errors_1 = require("@/utils/errors");
+const prisma_1 = require("../config/prisma");
+const room_service_1 = require("../services/room.service");
+const room_repository_1 = require("../repositories/room.repository");
+const asyncHandler_1 = require("../utils/asyncHandler");
+const errors_1 = require("../utils/errors");
 /**
  * Resolves a roomId or roomCode to a valid Room db record
  */

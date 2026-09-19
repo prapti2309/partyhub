@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.roomRepository = exports.RoomRepository = void 0;
-const redis_1 = require("@/config/redis");
-const logger_1 = require("@/utils/logger");
+const redis_1 = require("../config/redis");
+const logger_1 = require("../utils/logger");
 class RoomRepository {
     /**
      * Initialize room state in Redis.

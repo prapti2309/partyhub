@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const room_service_1 = require("@/services/room.service");
-const room_repository_1 = require("@/repositories/room.repository");
-const permission_service_1 = require("@/services/permission.service");
-const prisma_1 = require("@/config/prisma");
-const redis_1 = require("@/config/redis");
+const room_service_1 = require("../services/room.service");
+const room_repository_1 = require("../repositories/room.repository");
+const permission_service_1 = require("../services/permission.service");
+const prisma_1 = require("../config/prisma");
+const redis_1 = require("../config/redis");
 // Mock prisma and redisClient modules
 jest.mock("@/config/prisma", () => {
     const mockPrismaObj = {

@@ -10,11 +10,15 @@ const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const requestId_middleware_1 = require("./middleware/requestId.middleware");
+const tracing_middleware_1 = require("./middleware/tracing.middleware");
+const metrics_middleware_1 = require("./middleware/metrics.middleware");
 const error_middleware_1 = require("./middleware/error.middleware");
-const prisma_1 = require("./config/prisma");
-const redis_1 = require("./config/redis");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const room_routes_1 = __importDefault(require("./routes/room.routes"));
+const health_controller_1 = __importDefault(require("./health/health.controller"));
+const monitoring_routes_1 = __importDefault(require("./dashboard/monitoring.routes"));
+const prisma_1 = require("./config/prisma");
+const redis_1 = require("./config/redis");
 function createApp() {
     const app = (0, express_1.default)();
     // Basic API Rate Limiting protection
@@ -29,10 +33,14 @@ function createApp() {
     app.use(express_1.default.urlencoded({ extended: true }));
     app.use((0, cookie_parser_1.default)());
     app.use(requestId_middleware_1.requestIdMiddleware);
+    app.use(tracing_middleware_1.tracingMiddleware);
+    app.use(metrics_middleware_1.metricsMiddleware);
     app.use("/api/", limiter);
     // Mount Auth Router
     app.use("/api/v1/auth", auth_routes_1.default);
     app.use("/api/v1/rooms", room_routes_1.default);
+    app.use("/api/v1/monitoring", monitoring_routes_1.default);
+    app.use("/", health_controller_1.default);
     // Health Route Version 1
     app.get("/api/v1/health", async (_req, res) => {
         let pgStatus = "disconnected";

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.startHeartbeatWorker = startHeartbeatWorker;
-const redis_1 = require("@/config/redis");
-const room_repository_1 = require("@/repositories/room.repository");
-const room_service_1 = require("@/services/room.service");
-const logger_1 = require("@/utils/logger");
-const sockets_1 = require("@/sockets");
+const redis_1 = require("../config/redis");
+const room_repository_1 = require("../repositories/room.repository");
+const room_service_1 = require("../services/room.service");
+const logger_1 = require("../utils/logger");
+const sockets_1 = require("../sockets");
 function startHeartbeatWorker() {
     logger_1.logger.info("💓 Heartbeat Worker initialized and running...");
     // Run heartbeat checks every 15 seconds

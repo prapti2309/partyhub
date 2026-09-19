@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.redisRepository = void 0;
-const redis_1 = require("@/config/redis");
+const redis_1 = require("../config/redis");
 exports.redisRepository = {
     async setWithTTL(key, value, ttlSeconds) {
         const client = redis_1.redisClient;

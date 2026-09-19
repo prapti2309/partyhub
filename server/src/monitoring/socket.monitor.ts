@@ -33,7 +33,7 @@ export class SocketMonitor {
     this.reconnectSuccesses.inc();
   }
 
-  recordEvent(eventName: string, durationMs: number, valDurationMs = 0) {
+  recordEvent(_eventName: string, durationMs: number, valDurationMs = 0) {
     this.eventLatency.observe(durationMs);
     if (valDurationMs > 0) {
       this.validationDuration.observe(valDurationMs);

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerMediaHandlers = registerMediaHandlers;
 const socket_constants_1 = require("../socket.constants");
-const logger_1 = require("@/utils/logger");
-const media_validator_1 = require("@/validators/media.validator");
-function registerMediaHandlers(io, socket) {
+const logger_1 = require("../../utils/logger");
+const media_validator_1 = require("../../validators/media.validator");
+function registerMediaHandlers(_io, socket) {
     const userId = socket.data.user?.id;
     const handleMediaEvent = (schema, eventType) => async (payload, ack) => {
         try {

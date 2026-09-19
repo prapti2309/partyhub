@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socketRegistry = void 0;
-const redis_1 = require("@/config/redis");
+const redis_1 = require("../config/redis");
 const SOCKET_PREFIX = "socket:";
 exports.socketRegistry = {
     async registerSocket(socketId, userId) {

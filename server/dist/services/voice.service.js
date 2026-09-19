@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.voiceService = void 0;
 // src/services/voice.service.ts
-const logger_1 = require("@/utils/logger");
-const socket_server_1 = require("@/sockets/socket.server");
-const voice_repository_1 = require("@/repositories/voice.repository");
+const logger_1 = require("../utils/logger");
+const socket_server_1 = require("../sockets/socket.server");
+const voice_repository_1 = require("../repositories/voice.repository");
 /**
  * Core business logic for voice communication.
  * All methods are async and interact with Redis via voiceRepository and broadcast

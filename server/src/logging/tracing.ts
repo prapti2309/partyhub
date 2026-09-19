@@ -1,6 +1,5 @@
 // server/src/logging/tracing.ts
 import { logger } from './logger';
-import { requestContext } from './request-id';
 
 export async function traceOperation<T>(
   name: string,

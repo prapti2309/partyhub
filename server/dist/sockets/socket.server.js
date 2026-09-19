@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSocketIO = getSocketIO;
 exports.initSocketServer = initSocketServer;
 const socket_io_1 = require("socket.io");
-const logger_1 = require("@/utils/logger");
+const logger_1 = require("../utils/logger");
 const socket_adapter_1 = require("./socket.adapter");
 const socket_authentication_1 = require("./socket.authentication");
 // Import Handlers

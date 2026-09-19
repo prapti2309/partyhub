@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.presenceRepository = void 0;
 // src/repositories/presence.repository.ts
-const redis_1 = require("@/config/redis");
+const redis_1 = require("../config/redis");
 const USER_STATUS_PREFIX = 'presence:user:';
 const TYPING_PREFIX = 'typing:room:'; // set of userIds typing in room
 const UNREAD_PREFIX = 'unread:room:'; // hash per user

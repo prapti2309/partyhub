@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateVoiceState = exports.validateVoiceMute = exports.validateVoiceIceCandidate = exports.validateVoiceAnswer = exports.validateVoiceOffer = exports.validateVoiceJoin = void 0;
+// src/validators/voice.validator.ts
 const voice_types_1 = require("../types/voice.types");
 /**
  * Validation helpers for Voice signaling payloads.

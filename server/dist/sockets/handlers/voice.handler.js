@@ -2,15 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerVoiceHandlers = registerVoiceHandlers;
 const socket_constants_1 = require("../socket.constants");
-const voice_validator_1 = require("@/validators/voice.validator");
-const voice_service_1 = require("@/services/voice.service");
-const logger_1 = require("@/utils/logger");
+const voice_validator_1 = require("../../validators/voice.validator");
+const voice_service_1 = require("../../services/voice.service");
+const logger_1 = require("../../utils/logger");
 /**
  * Register all voice‑related Socket.IO events.
  * All events are namespaced under the constants defined in `socket.constants.ts`.
  * Validation is performed using the Zod schemas from `voice.validator.ts`.
  */
-function registerVoiceHandlers(io, socket) {
+function registerVoiceHandlers(_io, socket) {
     // JOIN ---------------------------------------------------------------
     socket.on(socket_constants_1.SOCKET_EVENTS.VOICE_JOIN, async (payload, ack) => {
         try {

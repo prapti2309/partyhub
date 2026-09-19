@@ -7,7 +7,7 @@ export class ApiMonitor {
   private responseTime = metricsRegistry.histogram('http_response_time_ms', 'HTTP response time in ms');
   private validationFailures = metricsRegistry.counter('http_validation_failures_total', 'Total request validation failures');
 
-  recordRequest(method: string, path: string, statusCode: number, durationMs: number) {
+  recordRequest(_method: string, _path: string, statusCode: number, durationMs: number) {
     this.requestsTotal.inc();
     this.responseTime.observe(durationMs);
     

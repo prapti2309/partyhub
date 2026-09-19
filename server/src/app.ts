@@ -11,6 +11,8 @@ import authRouter from "./routes/auth.routes";
 import roomRouter from "./routes/room.routes";
 import healthRouter from "./health/health.controller";
 import monitoringRouter from "./dashboard/monitoring.routes";
+import { prisma } from "./config/prisma";
+import { redisClient } from "./config/redis";
 
 export function createApp() {
   const app = express();

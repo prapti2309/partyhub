@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.roomService = exports.RoomService = void 0;
-const prisma_1 = require("@/config/prisma");
-const redis_1 = require("@/config/redis");
-const room_repository_1 = require("@/repositories/room.repository");
+const prisma_1 = require("../config/prisma");
+const redis_1 = require("../config/redis");
+const room_repository_1 = require("../repositories/room.repository");
 const permission_service_1 = require("./permission.service");
-const roomCode_1 = require("@/utils/roomCode");
-const logger_1 = require("@/utils/logger");
-const sockets_1 = require("@/sockets");
+const roomCode_1 = require("../utils/roomCode");
+const logger_1 = require("../utils/logger");
+const sockets_1 = require("../sockets");
 class RoomService {
     /**
      * Helper to broadcast websocket events to a room

@@ -2,7 +2,6 @@
 
 export class Counter {
   private value = 0;
-  private labels: Record<string, string> = {};
 
   constructor(public name: string, public help: string) {}
 

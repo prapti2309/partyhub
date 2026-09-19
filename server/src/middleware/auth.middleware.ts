@@ -12,6 +12,7 @@ declare global {
         role: string;
       };
       sessionId?: string;
+      id?: string;
     }
   }
 }

@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerPlayerHandlers = void 0;
 const socket_constants_1 = require("../socket.constants");
 const socket_middleware_1 = require("../socket.middleware");
-const player_validator_1 = require("@/validators/player.validator");
-const player_service_1 = require("@/services/player.service");
+const player_validator_1 = require("../../validators/player.validator");
+const player_service_1 = require("../../services/player.service");
 const socket_utils_1 = require("../socket.utils");
 const registerPlayerHandlers = (io, socket) => {
     const userId = socket.data.user.id;
