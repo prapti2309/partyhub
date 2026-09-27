@@ -43,7 +43,7 @@ export default function PricingPage() {
                 </div>
               </div>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-extrabold text-text-primary">$0</span>
+                <span className="text-5xl font-extrabold text-text-primary">₹0</span>
                 <span className="text-sm font-semibold text-text-secondary">/month</span>
               </div>
               <div className="mt-8 border-t border-border/50 pt-8">
@@ -97,7 +97,7 @@ export default function PricingPage() {
                 </div>
               </div>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-extrabold text-text-primary">$4.99</span>
+                <span className="text-5xl font-extrabold text-text-primary">₹99</span>
                 <span className="text-sm font-semibold text-text-secondary">/month</span>
               </div>
               <div className="mt-8 border-t border-border/50 pt-8">

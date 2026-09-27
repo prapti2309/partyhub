@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Notification } from "../types";
-import { MOCK_NOTIFICATIONS } from "../utils/mock-data";
+import { notificationService } from "../services/notification.service";
 
 interface NotificationStoreState {
   notifications: Notification[];
@@ -17,13 +17,17 @@ export const useNotificationStore = create<NotificationStoreState>((set) => ({
   unreadCount: 0,
 
   fetchNotifications: async () => {
-    // Simulate API load
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const unread = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
-    set({
-      notifications: MOCK_NOTIFICATIONS,
-      unreadCount: unread,
-    });
+    try {
+      const notifications = await notificationService.getNotifications();
+      const list = notifications || [];
+      const unread = list.filter((n) => !n.read).length;
+      set({
+        notifications: list,
+        unreadCount: unread,
+      });
+    } catch {
+      set({ notifications: [], unreadCount: 0 });
+    }
   },
 
   markAsRead: (id: string) => {

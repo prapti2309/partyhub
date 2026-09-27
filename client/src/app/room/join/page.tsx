@@ -37,13 +37,18 @@ export default function JoinRoomPage() {
   const { joinRoom, roomsList } = useRoomStore();
   const { success, error: toastError } = useToast();
 
+  const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [mounted, isAuthenticated, router]);
 
   const {
     register,
@@ -75,25 +80,21 @@ export default function JoinRoomPage() {
     }
   }, [code, roomsList]);
 
-  if (!isAuthenticated || !user) return null;
+  if (!mounted || !isAuthenticated || !user) return null;
 
   const onSubmit = async (data: JoinRoomFormValues) => {
     setIsSubmitting(true);
     try {
-      const room = roomsList.find((r) => r.code.toUpperCase() === data.code.toUpperCase());
-
-      // Password check simulation
-      if (room && room.password && room.password !== data.password) {
-        toastError("Incorrect passcode entered for this private room.", "Access Denied");
-        setIsSubmitting(false);
-        return;
-      }
-
-      await joinRoom(data.code, user.username);
-      success(`Joined Watch Room: ${data.code}`, "Successfully Joined");
-      router.push(`/room/${data.code.toUpperCase()}`);
-    } catch (e) {
-      toastError("Could not resolve room connection.", "Connection Failed");
+      await joinRoom(data.code.trim().toUpperCase(), user.username);
+      success(`Joined Watch Room: ${data.code.toUpperCase()}`, "Successfully Joined");
+      router.push(`/room/${data.code.trim().toUpperCase()}`);
+    } catch (e: any) {
+      toastError(
+        e?.response?.data?.message ||
+          e.message ||
+          "Could not find or join room. Please check the code.",
+        "Connection Failed"
+      );
     } finally {
       setIsSubmitting(false);
     }

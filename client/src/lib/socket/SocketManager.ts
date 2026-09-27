@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "@/stores/auth.store";
+import { env } from "@/config/env";
 
 export class SocketManager {
   private static instance: SocketManager;
@@ -27,13 +28,13 @@ export class SocketManager {
 
     this.connectionPromise = new Promise((resolve, reject) => {
       const { token } = useAuthStore.getState();
-      
+
       if (!token) {
         reject(new Error("Cannot connect socket without auth token"));
         return;
       }
 
-      this.socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001", {
+      this.socket = io(env.NEXT_PUBLIC_SOCKET_URL, {
         auth: { token },
         transports: ["websocket"],
         reconnection: true,
@@ -49,9 +50,14 @@ export class SocketManager {
       });
 
       this.socket.on("connect_error", (error) => {
-        console.error("[Socket.IO] Connection Error:", error.message);
+        console.warn("[Socket.IO] Connection Error:", error.message);
+        this.connectionPromise = null;
         if (error.message.includes("UNAUTHORIZED")) {
           // Token expired or invalid
+          if (this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+          }
           useAuthStore.getState().logout();
         }
         reject(error);

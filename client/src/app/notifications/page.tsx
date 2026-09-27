@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Bell, Check, Trash2, Calendar, Film, UserPlus } from "lucide-react";
+import { useAuthStore } from "../../stores/auth.store";
 import { useNotificationStore } from "../../stores/notification.store";
 import { Navigation } from "../../components/Navigation";
 import { Button } from "../../components/ui/Button";
@@ -19,13 +20,28 @@ import { useToast } from "../../components/ui/Toast";
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const { success } = useToast();
   const { notifications, fetchNotifications, markAsRead, markAllAsRead, deleteNotification } =
     useNotificationStore();
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    void fetchNotifications();
-  }, [fetchNotifications]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
+    if (mounted && isAuthenticated) {
+      void fetchNotifications();
+    }
+  }, [mounted, isAuthenticated, fetchNotifications, router]);
+
+  if (!mounted || !isAuthenticated) return null;
 
   const handleMarkRead = (id: string) => {
     markAsRead(id);

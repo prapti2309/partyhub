@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Users, UserPlus, Check, X, UserMinus, MessageSquare } from "lucide-react";
+import { useAuthStore } from "../../stores/auth.store";
 import { useFriendsStore } from "../../stores/friends.store";
 import { Navigation } from "../../components/Navigation";
 import { Button } from "../../components/ui/Button";
@@ -21,7 +22,10 @@ import { useToast } from "../../components/ui/Toast";
 
 export default function FriendsPage() {
   const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const { success, error: toastError } = useToast();
+
+  const [mounted, setMounted] = useState(false);
 
   const {
     friends,
@@ -38,8 +42,20 @@ export default function FriendsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    void fetchFriendsAndRequests();
-  }, [fetchFriendsAndRequests]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
+    if (mounted && isAuthenticated) {
+      void fetchFriendsAndRequests();
+    }
+  }, [mounted, isAuthenticated, fetchFriendsAndRequests, router]);
+
+  if (!mounted || !isAuthenticated) return null;
 
   const handleSendRequest = async (e: React.FormEvent) => {
     e.preventDefault();

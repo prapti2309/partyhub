@@ -1,14 +1,13 @@
 import { notificationApi } from "./api/notification.api";
 import { Notification } from "@/types";
-import { MOCK_NOTIFICATIONS } from "../utils/mock-data";
 
 export const notificationService = {
   getNotifications: async (): Promise<Notification[]> => {
     try {
       const response = await notificationApi.getNotifications();
-      return response.data;
+      return response.data || [];
     } catch (e) {
-      return MOCK_NOTIFICATIONS;
+      return [];
     }
   },
 

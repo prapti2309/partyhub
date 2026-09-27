@@ -20,7 +20,9 @@ export const useChatSocket = (roomId: string) => {
         roomId: message.roomId,
         userId: message.senderId,
         username: message.sender.username,
-        avatarUrl: message.sender.avatar || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${message.sender.username}`,
+        avatarUrl:
+          message.sender.avatar ||
+          `https://api.dicebear.com/7.x/pixel-art/svg?seed=${message.sender.username}`,
         content: message.content,
         pinned: false,
         createdAt: message.createdAt,
@@ -43,17 +45,25 @@ export const useChatSocket = (roomId: string) => {
     };
   }, [socket, roomId, addMessage, setTypist, user]);
 
-  const sendMessage = useCallback(async (content: string) => {
-    try {
-      await socketManager.emitWithAck("chat:send", { roomId, content });
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  }, [roomId]);
+  const sendMessage = useCallback(
+    async (content: string) => {
+      try {
+        await socketManager.emitWithAck("chat:send", { roomId, content });
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
+    },
+    [roomId]
+  );
 
-  const setTyping = useCallback((isTyping: boolean) => {
-    socketManager.emitWithAck("chat:typing", { roomId, isTyping }).catch(console.error);
-  }, [roomId]);
+  const setTyping = useCallback(
+    (isTyping: boolean) => {
+      if (!roomId) return;
+      const event = isTyping ? "chat:typing:start" : "chat:typing:stop";
+      socketManager.emitWithAck(event, { roomId }).catch(() => {});
+    },
+    [roomId]
+  );
 
   return { sendMessage, setTyping };
 };

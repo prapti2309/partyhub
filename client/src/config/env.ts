@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:4000/v1"),
+  NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:4000/api/v1"),
   NEXT_PUBLIC_SOCKET_URL: z.string().url().default("http://localhost:4000"),
 });
 

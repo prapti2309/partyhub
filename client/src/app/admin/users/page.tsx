@@ -11,7 +11,6 @@ import { Input } from "../../../components/ui/Input";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
 import { Avatar } from "../../../components/ui/Avatar";
-import { MOCK_USERS } from "../../../utils/mock-data";
 import { useToast } from "../../../components/ui/Toast";
 
 interface UserDetails {
@@ -27,7 +26,7 @@ export default function AdminUsersPage() {
   const { success } = useToast();
   const { user, isAuthenticated } = useAuthStore();
 
-  const [usersList, setUsersList] = useState<UserDetails[]>(MOCK_USERS as any);
+  const [usersList, setUsersList] = useState<UserDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {

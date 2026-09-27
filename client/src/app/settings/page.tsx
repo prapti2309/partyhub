@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { success, warning } = useToast();
 
+  const [mounted, setMounted] = useState(false);
   const [toggles, setToggles] = useState({
     emailNotifs: true,
     pushNotifs: true,
@@ -30,12 +31,16 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [mounted, isAuthenticated, router]);
 
-  if (!isAuthenticated || !user) return null;
+  if (!mounted || !isAuthenticated || !user) return null;
 
   const handleToggle = (key: keyof typeof toggles) => {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));

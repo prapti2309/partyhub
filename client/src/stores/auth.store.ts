@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { User, Profile } from "../types";
+import { authService } from "../services/auth.service";
 
 interface AuthStoreState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, email: string) => Promise<void>;
-  register: (username: string, email: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateProfile: (profile: Partial<Profile>) => void;
 }
@@ -41,67 +42,44 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   isAuthenticated: initialState.isAuthenticated,
   isLoading: false,
 
-  login: async (username: string, email: string) => {
+  login: async (email: string, password: string) => {
     set({ isLoading: true });
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      const res = await authService.login(email, password);
+      localStorage.setItem("watchparty_auth", JSON.stringify({ user: res.user, token: res.token }));
 
-    const mockUser: User = {
-      id: "user-current",
-      username,
-      email,
-      role: "USER",
-      createdAt: new Date().toISOString(),
-      profile: {
-        displayName: username,
-        avatarUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${username}`,
-        bio: "Hey there! I am using WatchParty.",
-        status: "Chilling",
-      },
-    };
-    const mockToken = "mock_jwt_token_" + Math.random().toString(36).substring(2);
-
-    localStorage.setItem("watchparty_auth", JSON.stringify({ user: mockUser, token: mockToken }));
-
-    set({
-      user: mockUser,
-      token: mockToken,
-      isAuthenticated: true,
-      isLoading: false,
-    });
+      set({
+        user: res.user,
+        token: res.token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (err) {
+      set({ isLoading: false });
+      throw err;
+    }
   },
 
-  register: async (username: string, email: string) => {
+  register: async (username: string, email: string, password: string) => {
     set({ isLoading: true });
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      const res = await authService.register(username, email, password);
+      localStorage.setItem("watchparty_auth", JSON.stringify({ user: res.user, token: res.token }));
 
-    const mockUser: User = {
-      id: "user-current",
-      username,
-      email,
-      role: "USER",
-      createdAt: new Date().toISOString(),
-      profile: {
-        displayName: username,
-        avatarUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${username}`,
-        bio: "Hey there! I am using WatchParty.",
-        status: "Chilling",
-      },
-    };
-    const mockToken = "mock_jwt_token_" + Math.random().toString(36).substring(2);
-
-    localStorage.setItem("watchparty_auth", JSON.stringify({ user: mockUser, token: mockToken }));
-
-    set({
-      user: mockUser,
-      token: mockToken,
-      isAuthenticated: true,
-      isLoading: false,
-    });
+      set({
+        user: res.user,
+        token: res.token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (err) {
+      set({ isLoading: false });
+      throw err;
+    }
   },
 
   logout: () => {
+    authService.logout().catch(() => {});
     localStorage.removeItem("watchparty_auth");
     set({ user: null, token: null, isAuthenticated: false });
   },
