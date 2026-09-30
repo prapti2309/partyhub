@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { ExtendedError } from "socket.io/dist/namespace";
+import { ExtendedError } from "socket.io";
 import { verifyAccessToken } from "@/utils/jwt";
 import { sessionRepository } from "@/repositories/session.repository";
 import { userRepository } from "@/repositories/user.repository";
