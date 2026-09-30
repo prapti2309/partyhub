@@ -3,6 +3,7 @@ services:
   - type: web
     name: partyhub-backend
     runtime: node
+    plan: free
     rootDir: server
     buildCommand: npm install && npm run build
     startCommand: npx prisma migrate deploy && npm start
@@ -13,7 +14,7 @@ services:
       - key: PORT
         value: 10000
 
-      -      - key: DATABASE_URL
+      - key: DATABASE_URL
         sync: false
 
       - key: REDIS_URL
@@ -32,6 +33,7 @@ services:
   - type: web
     name: partyhub-frontend
     runtime: node
+    plan: free
     rootDir: client
     buildCommand: npm install && npm run build
     startCommand: npm start
@@ -57,4 +59,3 @@ services:
     plan: free
     maxmemoryPolicy: allkeys-lru
     ipAllowList: []
-
