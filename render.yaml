@@ -13,10 +13,8 @@ services:
       - key: PORT
         value: 10000
 
-      - key: DATABASE_URL
-        fromDatabase:
-          name: partyhub-db
-          property: connectionString
+      -      - key: DATABASE_URL
+        sync: false
 
       - key: REDIS_URL
         fromService:
@@ -60,9 +58,3 @@ services:
     maxmemoryPolicy: allkeys-lru
     ipAllowList: []
 
-databases:
-  # 4. Managed PostgreSQL Database
-  - name: partyhub-db
-    databaseName: watchparty
-    user: partyhub_user
-    plan: free
