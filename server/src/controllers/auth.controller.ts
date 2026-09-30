@@ -31,7 +31,11 @@ const validateOrigin = (req: Request) => {
   const origin = req.headers.origin || req.headers.referer;
   // In development sandbox, origin checking might be relaxed. In prod, strict match is needed.
   if (isProd && origin) {
-    const allowed = ["https://watchparty.app", "http://localhost:3000"]; // Configured domains list
+    const allowed = [
+      "https://watchparty.app",
+      "https://partyhub-nine.vercel.app",
+      "http://localhost:3000"
+    ];
     const parsedOrigin = new URL(origin).origin;
     if (!allowed.some((domain) => parsedOrigin.startsWith(domain))) {
       throw new AppError("Cross-Origin CSRF validation failed", 403);
